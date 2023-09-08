@@ -1,0 +1,270 @@
+// Ref: https://github.com/nuxt-community/vuetify-module#customvariables
+//
+// The variables you want to modify
+// $font-size-root: 20px;
+
+$body-font-family: 'Inter';
+$heading-font-family: 'Lexend';
+
+$border-radius-root: 4px;
+
+$headings: (
+  'h1': (
+    'size': 1.75rem,
+    'weight': 500,
+    'line-height': 2rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h2': (
+    'size': 1.5rem,
+    'weight': 500,
+    'line-height': 1.75rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h3': (
+    'size': 1.25rem,
+    'weight': 500,
+    'line-height': 1.5rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h4': (
+    'size': 1rem,
+    'weight': 500,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h5': (
+    'size': 1rem,
+    'weight': 400,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'body-1': (
+    'size': 1rem,
+    'weight': 400,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': false,
+  ),
+  'body-2': (
+    'size': 0.875rem,
+    'weight': 400,
+    'line-height': 1.15rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': false,
+  ),
+  'button': (
+    'size': 0.875rem,
+    'weight': 500,
+    'line-height': 2.25rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': uppercase,
+  ),
+  'caption': (
+    'size': 0.75rem,
+    'weight': 400,
+    'line-height': 0.825rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+  ),
+);
+
+$rounded: (
+  'sm': 8px,
+  'md': $border-radius-root * 2,
+  'lg': $border-radius-root * 3,
+  'xl': $border-radius-root * 5,
+);
+
+/*
+.v-application {
+  .text-h1,
+  .text-h2,
+  .text-h3,
+  .text-h4,
+  .text-h5,
+  .text-h6,
+  .text-headline,
+  .text-title,
+  .text-subtitle-1,
+  .text-subtitle-2,
+  .text-body-1,
+  .text-body-2,
+  .text-button,
+  .text-caption,
+  .text-overline {
+    font-family: $body-font-family !important;
+  }
+}
+*/
+
+/*
+$border-radius-root: 4px;
+$body-font-family: 'Inter';
+$heading-font-family: 'Lexend';
+$btn-border-radius: $border-radius-root * 2 !default;
+$text-field-border-radius: $border-radius-root * 2 !default;
+
+$badge-dot-width: 5px;
+$badge-dot-height: 5px;
+
+
+$rounded: (
+  'sm': 6px,
+  'md': $border-radius-root * 2,
+  'lg': $border-radius-root * 3,
+  'xl': $border-radius-root * 5,
+);
+
+
+$grid-breakpoints: (
+  'xs': 0,
+  'sm': 600px,
+  'md': 960px,
+  'lg': 1280px - 16px,
+  'xl': 1600px - 16px,
+);
+
+
+$headings: (
+  'h1': (
+    'size': 1.75rem,
+    'weight': 700,
+    'line-height': 2rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h2': (
+    'size': 1.5rem,
+    'weight': 700,
+    'line-height': 1.75rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h3': (
+    'size': 1.25rem,
+    'weight': 700,
+    'line-height': 1.5rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h4': (
+    'size': 1rem,
+    'weight': 700,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h5': (
+    'size': 1rem,
+    'weight': 400,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h6': (
+    'size': 1rem,
+    'weight': 400,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'h7': (
+    'size': 1.75rem,
+    'weight': 700,
+    'line-height': 38.14px,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'subtitle-1': (
+    'size': 1.25rem,
+    'weight': bold,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $heading-font-family,
+    'text-transform': false,
+  ),
+  'subtitle-2': (
+    'size': 1.25rem,
+    'weight': normal,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': false,
+  ),
+  'subtitle-3': (
+    'size': 1.25rem,
+    'weight': 500,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': false,
+  ),
+  'body-1': (
+    'size': 1rem,
+    'weight': 400,
+    'line-height': 1.25rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': false,
+  ),
+  'body-2': (
+    'size': 0.875rem,
+    'weight': 400,
+    'line-height': 1,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': false,
+  ),
+  'button': (
+    'size': 0.875rem,
+    'weight': 500,
+    'line-height': 2.25rem,
+    'letter-spacing': 0.0892857143em,
+    'font-family': $body-font-family,
+    'text-transform': uppercase,
+  ),
+  'caption': (
+    'size': 0.75rem,
+    'weight': 400,
+    'line-height': 0.75rem,
+    'letter-spacing': normal,
+    'font-family': $body-font-family,
+    'text-transform': false,
+  ),
+  'overline': (
+    'size': 0.75rem,
+    'weight': 500,
+    'line-height': 0.75rem,
+    'letter-spacing': 0.04em,
+    'font-family': $body-font-family,
+    'text-transform': uppercase,
+  ),
+);
+
+$pagination-item-margin: 2px;
+$list-item-title-font-size: 1rem !default;
+
+*/
+
+@import '~vuetify/src/styles/styles.sass';
