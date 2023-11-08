@@ -2,36 +2,36 @@
   <v-app :key="componentKey">
     <v-navigation-drawer
       :key="mini"
+      :expand-on-hover="mini"
+      :mini-variant="mini"
+      app
       class="pt-16"
       color="white"
       mini-variant-width="64px"
-      :mini-variant="mini"
-      :expand-on-hover="mini"
       permanent
-      app
     >
       <v-list dense rounded>
         <v-list-item
           v-for="item in menuItems"
           :key="item.title"
-          color="primary"
-          :to="item.to"
-          nuxt
-          exact-path
           :inactive="item.disabled"
+          :to="item.to"
+          color="primary"
+          exact-path
+          nuxt
         >
           <v-list-item-icon>
             <img
-              class="iconDrawer"
               :src="require(`assets/img/icons/${item.icon}`)"
+              class="iconDrawer"
             />
           </v-list-item-icon>
           <v-list-item-content color="primary">
             <v-list-item-title
               color="primary"
               style="color: #011d89 !important; font-family: Inter !important"
-              >{{ item.title }}</v-list-item-title
-            >
+              >{{ item.title }}
+            </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -48,9 +48,9 @@
             <v-list-item-title class="text-2">
               {{ $t('administration') }}
             </v-list-item-title>
-            <v-list-item-subtitle>{{
-              $t('managementPanel')
-            }}</v-list-item-subtitle>
+            <v-list-item-subtitle
+              >{{ $t('managementPanel') }}
+            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -68,22 +68,22 @@
                 itemAdmin.titleAdm === $t('indicatorManagement') && isEditorRole
               )
             "
-            color="primary"
             :to="itemAdmin.toAdm"
+            color="primary"
             nuxt
           >
             <v-list-item-icon>
               <img
-                class="iconDrawer"
                 :src="require(`assets/img/icons/${itemAdmin.iconAdm}`)"
+                class="iconDrawer"
               />
             </v-list-item-icon>
             <v-list-item-content color="primary">
               <v-list-item-title
                 color="primary"
                 style="color: #011d89 !important; font-family: Inter !important"
-                >{{ itemAdmin.titleAdm }}</v-list-item-title
-              >
+                >{{ itemAdmin.titleAdm }}
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </div>
@@ -99,9 +99,9 @@
             <v-list-item-title class="text-2">
               {{ $t('administrationSuper') }}
             </v-list-item-title>
-            <v-list-item-subtitle>{{
-              $t('managementPanelSuper')
-            }}</v-list-item-subtitle>
+            <v-list-item-subtitle
+              >{{ $t('managementPanelSuper') }}
+            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -110,7 +110,7 @@
           v-for="itemSuperAdmin in menuSuperAdminItems"
           :key="itemSuperAdmin.titleAdm"
         >
-          <v-list-item color="primary" :to="itemSuperAdmin.toSuperAdm" nuxt>
+          <v-list-item :to="itemSuperAdmin.toSuperAdm" color="primary" nuxt>
             <v-list-item-icon>
               <v-icon color="#3233c1">mdi-office-building-cog-outline</v-icon>
             </v-list-item-icon>
@@ -118,8 +118,8 @@
               <v-list-item-title
                 color="primary"
                 style="color: #011d89 !important; font-family: Inter !important"
-                >{{ itemSuperAdmin.titleSuperAdm }}</v-list-item-title
-              >
+                >{{ itemSuperAdmin.titleSuperAdm }}
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </div>
@@ -128,11 +128,11 @@
 
     <v-app-bar
       align="center"
-      justify="center"
+      color="primary"
       fixed
       height="60px"
+      justify="center"
       style="z-index: 9999"
-      color="primary"
     >
       <nuxt-link to="/">
         <img src="~assets/img/imagotipo-app.svg" />
@@ -140,38 +140,38 @@
       <div id="switch">
         <v-select
           v-model="loggedOrg"
-          class="my-select px-0 mt-6 ml-5"
-          height="40px"
           :items="organizations"
-          solo
-          rounded
+          :menu-props="{ bottom: true, offsetY: true }"
+          background-color="blue"
+          class="my-select px-0 mt-6 ml-5"
           dense
+          height="40px"
+          item-color="blue"
           item-text="organizationName"
           item-value="organizationName"
-          background-color="blue"
-          item-color="blue"
-          :menu-props="{ bottom: true, offsetY: true }"
+          rounded
+          solo
           @change="changeOrganization"
         >
           <template #selection="{ item }">
             <img
-              class="mr-2 ml-0 px-0 my-1 py-0"
+              :src="item.image"
               aspect-ratio="1"
-              width="30"
+              class="mr-2 ml-0 px-0 my-1 py-0"
               height="30"
               style="border-radius: 50%"
-              :src="item.image"
+              width="30"
             />{{ truncateString(item.organization.organizationName) }}
           </template>
 
           <template #item="{ item }">
             <img
-              class="mr-2 ml-0 px-0 my-2 py-0"
+              :src="item.image"
               aspect-ratio="1"
-              width="30"
+              class="mr-2 ml-0 px-0 my-2 py-0"
               height="30"
               style="border-radius: 50%"
-              :src="item.image"
+              width="30"
             />{{ item.organization.organizationName }}
           </template>
         </v-select>
@@ -202,15 +202,15 @@
           <v-btn
             class="mx-2"
             color="white"
-            icon
-            x-large
             elevation="0"
+            icon
             v-bind="attrs"
+            x-large
             v-on="on"
           >
             <img
-              class="iconHeader"
               :src="require(`assets/img/icons/entities.svg`)"
+              class="iconHeader"
             />
           </v-btn>
         </template>
@@ -223,8 +223,8 @@
             >
               <v-list-item-icon class="mr-2">
                 <img
-                  class="iconDrawer"
                   :src="require(`assets/img/icons/entitiesBlue.svg`)"
+                  class="iconDrawer"
                 />
               </v-list-item-icon>
               <v-list-item-content>
@@ -247,9 +247,9 @@
             >
               <v-list-item-content>
                 <logbook-tooltip
+                  :edit="!isUserRole"
                   :entity="loggedOrg.organization"
                   :logbook="loggedOrg.organization.logbook"
-                  :edit="!isUserRole"
                 ></logbook-tooltip>
               </v-list-item-content>
             </v-list-item>
@@ -262,15 +262,15 @@
           <v-btn
             class="mx-2"
             color="white"
-            icon
-            x-large
             elevation="0"
+            icon
             v-bind="attrs"
+            x-large
             v-on="on"
           >
             <img
-              class="iconHeader"
               :src="require(`assets/img/icons/users.svg`)"
+              class="iconHeader"
             />
           </v-btn>
         </template>
@@ -283,8 +283,8 @@
             <v-list-item @click="toUserList">
               <v-list-item-icon class="mr-2">
                 <img
-                  class="iconDrawer"
                   :src="require(`assets/img/icons/user-management.svg`)"
+                  class="iconDrawer"
                 />
               </v-list-item-icon>
               <v-list-item-content>
@@ -299,8 +299,8 @@
             >
               <v-list-item-icon class="mr-2">
                 <img
-                  class="iconDrawer"
                   :src="require(`assets/img/icons/user-new.svg`)"
+                  class="iconDrawer"
                 />
               </v-list-item-icon>
               <v-list-item-content>
@@ -318,15 +318,15 @@
           <v-btn
             class="mr-2"
             color="white"
-            icon
-            x-large
             elevation="0"
+            icon
             v-bind="attrs"
+            x-large
             v-on="on"
           >
             <img
-              class="iconHeader"
               :src="require(`assets/img/icons/notifications.svg`)"
+              class="iconHeader"
             />
           </v-btn>
         </template>
@@ -336,8 +336,8 @@
             <v-list-item>
               <v-list-item-icon class="mr-2">
                 <img
-                  class="iconDrawer"
                   :src="require(`assets/img/icons/Error.svg`)"
+                  class="iconDrawer"
                 />
               </v-list-item-icon>
               <v-list-item-content>
@@ -354,11 +354,11 @@
           <v-btn
             id="avatar"
             class="white--text ml-2 caption"
-            width="45px"
-            height="45px"
             color="blue"
             fab
+            height="45px"
             v-bind="attrs"
+            width="45px"
             v-on="on"
           >
             {{
@@ -372,8 +372,8 @@
             <v-list-item @click.prevent="userSettings($auth.user.userUuid)">
               <v-list-item-icon class="mr-2">
                 <img
-                  class="iconDrawer"
                   :src="require(`assets/img/icons/users-blue.svg`)"
+                  class="iconDrawer"
                 />
               </v-list-item-icon>
               <v-list-item-content>
@@ -385,8 +385,8 @@
             <v-list-item @click.prevent="logout">
               <v-list-item-icon class="mr-2">
                 <img
-                  class="iconDrawer"
                   :src="require(`assets/img/icons/Logout.svg`)"
+                  class="iconDrawer"
                 />
               </v-list-item-icon>
               <v-list-item-content>
@@ -401,7 +401,7 @@
     </v-app-bar>
 
     <v-main class="lightGray p-0 pt-4" @updateImage="changeImage()">
-      <v-container fluid class="pt-16">
+      <v-container class="pt-16" fluid>
         <nuxt />
       </v-container>
     </v-main>
@@ -415,6 +415,7 @@ import API_LOGBOOK from '~/api/logbook'
 export default {
   name: 'Default',
   data() {
+    console.log('DEFAULT LAYOUT')
     return {
       organizations: [],
       loggedOrg: null,
@@ -643,11 +644,12 @@ export default {
 }
 </script>
 <style lang="scss">
->>> .v-select__selection,
+> .v-select__selection,
 .v-select__selection--comma,
 .v-select.v-text-field input {
   color: white !important;
 }
+
 .my-select .v-input__slot {
   padding: 6px !important;
   width: 280px;
@@ -658,11 +660,13 @@ export default {
 #switch .v-select__selections {
   color: white !important;
 }
+
 #switch .mdi-menu-down,
 #switch .mdi-menu-down:after,
 #switch .mdi-menu-down:before {
   color: white !important;
 }
+
 .v-list-item.blue--text.v-list-item--active.v-list-item--link.theme--light.v-list-item--highlighted {
   background-color: white !important;
   color: #011d89 !important;
@@ -682,9 +686,11 @@ export default {
 .v-list-item.blue--text.v-list-item--active.v-list-item--link.theme--light:hover {
   background-color: #e6e6ec !important;
 }
+
 .v-menu__content.theme--light.v-menu__content--fixed.menuable__content__active {
   box-shadow: none !important;
 }
+
 #avatar {
   box-shadow: none !important;
 }

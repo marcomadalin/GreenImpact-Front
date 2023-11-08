@@ -1,6 +1,6 @@
 export default {
   env: {
-    baseUrl: process.env.BASE_URL,
+    baseUrl: process.env.API_BASE_URL,
     assetsUrl: process.env.ASSETS_URL,
   },
   telemetry: false,
@@ -120,15 +120,8 @@ export default {
     },
   },
 
-  proxy: {
-    '/b2b/': {
-      target: process.env.API_BASE_URL,
-    },
-  },
-
   axios: {
-    proxy: true,
-    baseURL: '/',
+    baseURL: 'http://localhost:8000',
     // debug: process.env.NODE_ENV !== 'production',
   },
 
@@ -158,9 +151,9 @@ export default {
           property: false,
         },
         endpoints: {
-          login: { url: '/b2b/login', method: 'post' },
-          logout: { url: '/b2b/users/logout', method: 'post' },
-          user: { url: '/b2b/users/whoami', method: 'get' },
+          login: { url: '/security/authentication/login', method: 'post' },
+          logout: { url: '/security/authentication/logout', method: 'post' },
+          user: { url: '/security/authentication/whoami', method: 'get' },
         },
       },
     },

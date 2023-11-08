@@ -31,50 +31,50 @@
       ></p>
       <v-text-field
         v-model="form.username"
-        filled
-        background-color="white"
-        :rules="emailRules"
-        :label="$t('email')"
-        required
         :error="error"
+        :label="$t('email')"
+        :rules="emailRules"
+        background-color="white"
+        filled
+        required
         @keypress="error = null"
       ></v-text-field>
       <v-text-field
         v-model="form.password"
-        :rules="passwordRules"
-        filled
         :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+        :error="error"
+        :label="$t('password')"
+        :rules="passwordRules"
         :type="show ? 'text' : 'password'"
         background-color="white"
-        :label="$t('password')"
+        filled
         required
-        :error="error"
-        @click:append="show = !show"
         @keypress="error = null"
+        @click:append="show = !show"
       ></v-text-field>
       <v-btn
-        block
-        height="45px"
-        small
-        rounded
-        depressed
-        type="submit"
-        elevation="0"
-        color="primary"
         :loading="loading"
+        block
         class="text-body-2 white--text px-4"
+        color="primary"
+        depressed
+        elevation="0"
+        height="45px"
+        rounded
+        small
         style="
           font-family: 'Lexend' !important;
           font-style: normal !important;
           font-weight: 500 !important;
           font-size: 16px !important;
         "
+        type="submit"
         @click="validate"
       >
         {{ $t('login') }}
       </v-btn>
     </v-form>
-    <v-alert v-if="messages" text prominent color="red">
+    <v-alert v-if="messages" color="red" prominent text>
       {{ messages.message }}
     </v-alert>
   </section>
@@ -115,10 +115,11 @@ export default {
           .then(() => {
             this.$router.push({ path: '/' })
           })
+        this.loading = false
       } catch (err) {
         this.loading = false
+        console.log(err)
         this.messages = err.response.data
-        console.log(err.response)
       }
     },
     validate() {

@@ -1,6 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <template>
-  <v-container fluid px-8 pt-8 pb-5>
+  <v-container fluid pb-5 pt-8 px-8>
     <h1 class="blue--text text-h1 mb-6">
       {{ $t('ma2030Summary') }}
     </h1>
@@ -11,88 +11,100 @@
       >Ver resumen ejecutivo para la Agenda Urbana Española (AUE)</nuxt-link
     >
     -->
-    <v-container fluid px-0 pt-0 pb-5>
+    <v-container fluid pb-5 pt-0 px-0>
       <v-row no-gutters>
-        <v-col sm="12" md="9" lg="6" xl="6" class="pb-4">
-          <v-row class="white rounded-lg pa-5 mb-0 plain-shadow" no-gutters fluid>
+        <v-col class="pb-4" lg="6" md="9" sm="12" xl="6">
+          <v-row
+            class="white rounded-lg pa-5 mb-0 plain-shadow"
+            fluid
+            no-gutters
+          >
             <v-col cols="auto ">
               <v-list-item-avatar
-                height="100%"
-                width="100%"
-                max-width="75px"
-                max-height="75px"
                 class="my-0"
+                height="100%"
+                max-height="75px"
+                max-width="75px"
+                width="100%"
               >
                 <v-img :src="entityImage" />
               </v-list-item-avatar>
             </v-col>
             <v-col>
-              <p class="text-body-2 darkBlue--text mb-2" style="color: #011D89!important;">
+              <p
+                class="text-body-2 darkBlue--text mb-2"
+                style="color: #011d89 !important"
+              >
                 {{ $t('sustainableEntity') }}
               </p>
               <p class="text-h2 blue--text" style="height: 40px">
-                {{
-                  orgName
-                }}
+                {{ orgName }}
               </p>
             </v-col>
           </v-row>
-          <v-col v-if="listplanimpact.length > 0" class="white rounded-lg plain-shadow" no-gutters style="height: 405px; margin-top: 20px; margin-bottom: 20px">
-            <v-chart
-              :key="chartKey"
-              :option="pie"
-            />
+          <v-col
+            v-if="listplanimpact.length > 0"
+            class="white rounded-lg plain-shadow"
+            no-gutters
+            style="height: 405px; margin-top: 20px; margin-bottom: 20px"
+          >
+            <v-chart :key="chartKey" :option="pie" />
           </v-col>
-          <v-col v-else class="white rounded-lg mt-4 justify-center align-center d-flex" no-gutters>
-            <p class="text-body-2 d-flex align-center text-center" style="height: 100px">
+          <v-col
+            v-else
+            class="white rounded-lg mt-4 justify-center align-center d-flex"
+            no-gutters
+          >
+            <p
+              class="text-body-2 d-flex align-center text-center"
+              style="height: 100px"
+            >
               {{ $t('noDataPie') }}
             </p>
           </v-col>
         </v-col>
-        <v-col sm="0" md="3" lg="6" xl="6" class="ml-0">
+        <v-col class="ml-0" lg="6" md="3" sm="0" xl="6">
           <v-row no-gutters>
             <v-col class="mb-3" style="margin-left: 20px; margin-bottom: 20px">
               <IndicatorReview
-                :up-to-date="true"
-                :total-indicators=allIndicators.length
                 :indicators="upToDateIndicators"
                 :listplanimpact="listplanimpact"
+                :total-indicators="allIndicators.length"
+                :up-to-date="true"
               />
             </v-col>
             <v-col style="margin-left: 20px; margin-bottom: 20px">
               <IndicatorReview
-                :total-indicators=allIndicators.length
                 :indicators="riskIndicators"
                 :listplanimpact="listplanimpact"
+                :total-indicators="allIndicators.length"
               />
             </v-col>
           </v-row>
         </v-col>
       </v-row>
     </v-container>
-    <v-container fluid px-0 pt-0>
+    <v-container fluid pt-0 px-0>
       <div
         v-if="listplanimpact.length < 1 || items.length < 1"
         class="d-flex align-center justify-center text-center"
         style="height: 450px"
       >
-        <v-container fluid class="px-0 pt-0 mt-0 pb-7">
+        <v-container class="px-0 pt-0 mt-0 pb-7" fluid>
           <div v-if="items.length < 1">
             <div>
               <p class="text-body-2">
-                {{
-                  $t('noPlans')
-                }}
+                {{ $t('noPlans') }}
               </p>
             </div>
             <div v-if="isAdminRole || isEditorRole || isSuperAdminRole">
               <v-btn
-                class="mt-10"
-                small
-                rounded
-                elevation="0"
-                color="primary"
                 :to="{ name: 'plan-add' }"
+                class="mt-10"
+                color="primary"
+                elevation="0"
+                rounded
+                small
               >
                 {{ $t('createPlan') }}
               </v-btn>
@@ -100,52 +112,57 @@
           </div>
           <div v-else>
             <p class="text-body-2">
-              {{
-                $t('noIndicators')
-              }}
+              {{ $t('noIndicators') }}
             </p>
           </div>
         </v-container>
       </div>
       <div v-else>
-        <v-container fluid class="px-0 pt-0 mt-0 pb-7">
+        <v-container class="px-0 pt-0 mt-0 pb-7" fluid>
           <v-row no-gutters>
-            <v-col cols="6" sm="6" align="left">
+            <v-col align="left" cols="6" sm="6">
               <h2 class="blue--text text-h2">
                 {{ $t('odsAffected') }}
               </h2>
             </v-col>
           </v-row>
-            <v-slide-group
-              v-model="odsSelected"
-              class="pa-0 d-flex align-center"
-              style="margin-left: -10px"
-              active-class="success"
-              mandatory
+          <v-slide-group
+            v-model="odsSelected"
+            active-class="success"
+            class="pa-0 d-flex align-center"
+            mandatory
+            style="margin-left: -10px"
+          >
+            <v-slide-item
+              v-for="(item, i) in listplanimpact"
+              :key="i"
+              v-slot="{ active, toggle }"
             >
-              <v-slide-item
-                v-for="(item, i) in listplanimpact"
-                :key="i"
-                v-slot="{active, toggle }"
-              >
-                <v-col cols="auto" style="cursor: pointer" @click="toggle">
-                <summary-ods-list :ods="item" :selected="active"/>
+              <v-col cols="auto" style="cursor: pointer" @click="toggle">
+                <summary-ods-list :ods="item" :selected="active" />
               </v-col>
-              </v-slide-item>
-            </v-slide-group>
+            </v-slide-item>
+          </v-slide-group>
           <v-expand-transition>
-            <div
-              v-if="odsSelected != null"
-              class="ml-10"
-            >
-              <h3 class="blue--text text-h3 mb-5 ml-1">{{$t('indicatorSDGHeading') + ' ' + listplanimpact[odsSelected].dtoReference.theOne.levelN_ItemId}}</h3>
+            <div v-if="odsSelected != null" class="ml-10">
+              <h3 class="blue--text text-h3 mb-5 ml-1">
+                {{
+                  $t('indicatorSDGHeading') +
+                  ' ' +
+                  listplanimpact[odsSelected].dtoReference.theOne.levelN_ItemId
+                }}
+              </h3>
               <v-row
                 v-for="(item, i) in odsIndicators"
                 :key="i"
                 class="rounded-lg my-4 px-0 py-0 ml-1"
                 style="margin-top: 4px !important"
               >
-                <indicator-block :indicator="item" :show="true" :impact="getIndicatorImpact(item.indicatorUUID)" />
+                <indicator-block
+                  :impact="getIndicatorImpact(item.indicatorUUID)"
+                  :indicator="item"
+                  :show="true"
+                />
               </v-row>
             </div>
           </v-expand-transition>
@@ -161,11 +178,17 @@
           v-for="(actionPlan, key) in items.slice(0, Math.min(items.length, 4))"
           :key="key"
           cols="12"
-          sm="6"
-          md="4"
           lg="3"
+          md="4"
+          sm="6"
         >
-          <action-plan-block style="box-shadow: none !important;" :plan="actionPlan" :impact="impact" :show-description="false" class="mb-4" />
+          <action-plan-block
+            :impact="impact"
+            :plan="actionPlan"
+            :show-description="false"
+            class="mb-4"
+            style="box-shadow: none !important"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -177,10 +200,10 @@ import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { PieChart } from 'echarts/charts'
 import {
+  GridComponent,
+  LegendComponent,
   TitleComponent,
   TooltipComponent,
-  LegendComponent,
-  GridComponent,
 } from 'echarts/components'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import IndicatorReview from '~/components/IndicatorReview.vue'
@@ -212,6 +235,7 @@ export default {
     let riskIndicators = []
     let pie = {}
     try {
+      console.log('INDEX PLANS')
       const plans = await API.init($axios).list()
 
       for (let i = 0; i < plans.length; i++) items.push(plans[i])
@@ -380,6 +404,8 @@ export default {
     }
   },
   data() {
+    console.log('AUTH:')
+    console.log(this.$auth)
     return {
       chartKey: 0,
       entityImage: null,
@@ -503,11 +529,13 @@ export default {
   display: flex;
   align-items: center;
 }
+
 #indicatorIcons {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
+
 #planblock {
   box-shadow: none !important;
 }

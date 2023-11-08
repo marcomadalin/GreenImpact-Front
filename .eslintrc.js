@@ -15,5 +15,6 @@ module.exports = {
     'vue/component-definition-name-casing': 'off',
     'vue/multi-word-component-names': 'off',
     'no-console': 'off',
+    'unicorn/prefer-includes': 'off',
   },
 }
