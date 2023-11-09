@@ -52,6 +52,7 @@ Vue.mixin({
     hasFiise() {
       return (
         this.$auth.user &&
+        'productAcronyms' in this.$auth.user &&
         this.$auth.user.productAcronyms.includes(products.FIISE)
       )
     },
@@ -59,6 +60,7 @@ Vue.mixin({
     hasLogbook() {
       return (
         this.$auth.user &&
+        'productAcronyms' in this.$auth.user &&
         this.$auth.user.productAcronyms.includes(products.LOGBOOK)
       )
     },

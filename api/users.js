@@ -1,16 +1,16 @@
 class API_USERS {
   organizationUUID = null
-  apiEndpoint = '/b2b/'
+  apiEndpoint = '/user/'
 
   init($axios, organizationUUID) {
     this.$axios = $axios
     this.organizationUUID = organizationUUID
-    this.apiEndpoint = `/b2b/${this.organizationUUID}`
+    this.apiEndpoint = `/user/${this.organizationUUID}`
     return this
   }
 
-  async getOrganizations() {
-    return await this.$axios.$get(`/b2b/users/myOrganizations`)
+  async getOrganizations(id) {
+    return await this.$axios.$get(`/user/users/${id}/myOrganizations`)
   }
 
   async getOrganizationImage(organizationUUID) {

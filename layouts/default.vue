@@ -415,7 +415,6 @@ import API_LOGBOOK from '~/api/logbook'
 export default {
   name: 'Default',
   data() {
-    console.log('DEFAULT LAYOUT')
     return {
       organizations: [],
       loggedOrg: null,
@@ -523,10 +522,11 @@ export default {
         this.$axios,
         this.$auth.user.loggedOrganizationUuid
       )
-      this.organizations = await API.getOrganizations()
+      this.organizations = await API.getOrganizations(this.$auth.user.id)
 
       this.organizations = await Promise.all(
         this.organizations.map(async (org) => {
+          /*
           const path = await API.getOrganizationImage(
             org.organization.organizationUUID
           )
@@ -534,12 +534,11 @@ export default {
           // TODO: this s3 should not be hardcoded!
           org.image = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
 
-          if (
-            this.$auth.user.loggedOrganizationUuid ===
-            org.organization.organizationUUID
-          ) {
+           */
+          org.image = ''
+          if (this.$auth.user.loggedOrganization.id === org.id) {
             this.loggedOrg = org
-            this.loggedOrg.organization.logbook = null
+            this.loggedOrg.logbook = null
             if (this.hasLogbook) {
               try {
                 this.loggedOrg.organization.logbook = await API_LOGBOOK.init(
@@ -570,7 +569,7 @@ export default {
       //     this.loggedOrg = this.organizations[i]
       // }
     } catch (e) {
-      console.log(e.response)
+      console.log(e)
     }
   },
 

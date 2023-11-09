@@ -18,10 +18,10 @@ export const indicatorEndpoint = {
 }
 
 export const roles = {
-  ADMIN: 'ROLE_ADMIN',
-  EDITOR: 'ROLE_EDITOR',
-  USER: 'ROLE_USER',
-  SUPER_ADMIN: 'ROLE_SUPER_ADMIN',
+  ADMIN: 'ADMINISTRATOR',
+  EDITOR: 'EDITOR',
+  USER: 'USER',
+  SUPER_ADMIN: 'SUPER',
 }
 
 export const products = {
