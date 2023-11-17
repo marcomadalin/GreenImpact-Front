@@ -161,7 +161,7 @@
               height="30"
               style="border-radius: 50%"
               width="30"
-            />{{ truncateString(item.organization.organizationName) }}
+            />{{ truncateString(item.name) }}
           </template>
 
           <template #item="{ item }">
@@ -172,7 +172,7 @@
               height="30"
               style="border-radius: 50%"
               width="30"
-            />{{ item.organization.organizationName }}
+            />{{ item.name }}
           </template>
         </v-select>
       </div>
@@ -185,16 +185,15 @@
       <v-menu
         v-if="
           loggedOrg &&
-          loggedOrg.organization &&
           ((isEditorRole && logbookProduct) ||
             isAdminRole ||
             isSuperAdminRole ||
             (isUserRole &&
               logbookProduct &&
               init &&
-              loggedOrg.organization.logbook &&
-              loggedOrg.organization.logbook.logBookEnabled &&
-              loggedOrg.organization.logbook.folders[0].items.length))
+              loggedOrg.logbook &&
+              loggedOrg.logbook.logBookEnabled &&
+              loggedOrg.logbook.folders[0].items.length))
         "
         offset-y
       >
@@ -241,15 +240,15 @@
                   isAdminRole ||
                   isEditorRole ||
                   (isUserRole &&
-                    loggedOrg.organization.logbook &&
-                    loggedOrg.organization.logbook.logBookEnabled))
+                    loggedOrg.logbook &&
+                    loggedOrg.logbook.logBookEnabled))
               "
             >
               <v-list-item-content>
                 <logbook-tooltip
                   :edit="!isUserRole"
-                  :entity="loggedOrg.organization"
-                  :logbook="loggedOrg.organization.logbook"
+                  :entity="loggedOrg"
+                  :logbook="loggedOrg.logbook"
                 ></logbook-tooltip>
               </v-list-item-content>
             </v-list-item>
@@ -361,15 +360,12 @@
             width="45px"
             v-on="on"
           >
-            {{
-              firstCapitalized(organizations[0].user.firstName) +
-              firstCapitalized(organizations[0].user.lastName)
-            }}
+            {{ firstCapitalized($auth.user.name) }}
           </v-btn>
         </template>
         <v-list dense>
           <v-list-item-group color="primary">
-            <v-list-item @click.prevent="userSettings($auth.user.userUuid)">
+            <v-list-item @click.prevent="userSettings($auth.user.id)">
               <v-list-item-icon class="mr-2">
                 <img
                   :src="require(`assets/img/icons/users-blue.svg`)"
@@ -585,24 +581,28 @@ export default {
         this.$axios,
         this.$auth.user.loggedOrganizationUuid
       )
+      this.organizations = await API.getOrganizations(this.$auth.user.id)
 
-      this.organizations = await Promise.all(
-        this.organizations.map(async (org) => {
-          const path = await API.getOrganizationImage(
-            org.organization.organizationUUID
-          )
+      this.organizations.map((org) => {
+        /*
+        const path = await API.getOrganizationImage(
+          org.organization.organizationUUID
+        )
 
-          org.image = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
-          return org
-        })
-      )
+        // TODO: this s3 should not be hardcoded!
+        org.image = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
+
+         */
+        org.image = ''
+        return org
+      })
       this.componentKey += 1
     },
     firstCapitalized(name) {
       return name ? name[0].toUpperCase() : ''
     },
-    userSettings(useruuid) {
-      this.$router.push({ path: `/user/${useruuid}/settings` })
+    userSettings(id) {
+      this.$router.push({ path: `/user/${id}/settings` })
     },
     toUserList() {
       this.$router.push({ name: 'user-list' })
@@ -610,7 +610,7 @@ export default {
     toEntityProfile() {
       this.$router.push({
         name: 'entity-profile',
-        params: { id: this.$auth.user.loggedOrganizationUuid },
+        params: { id: this.$auth.user.loggedOrganization.id },
       })
     },
     toUserAdd() {
@@ -626,14 +626,18 @@ export default {
     },
     async changeOrganization() {
       try {
-        const user = await API_USERS.init(
+        const API = API_USERS.init(
           this.$axios,
-          this.$auth.user.loggedOrganizationUuid
-        ).changeOrganization(this.loggedOrg.organization.organizationUUID)
+          this.$auth.user.loggedOrganization.id
+        )
+
+        const token = await API.changeOrganization(this.loggedOrg.id)
+
+        const user = await API.whoami()
 
         await this.$auth.setUser(user)
         await this.$auth
-          .setUserToken(user.accessToken)
+          .setUserToken(token)
           .then(this.$nextTick(() => window.location.reload()))
       } catch (e) {
         console.log(e)

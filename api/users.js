@@ -9,8 +9,18 @@ class API_USERS {
     return this
   }
 
-  async getOrganizations(id) {
-    return await this.$axios.$get(`/user/users/${id}/myOrganizations`)
+  async getOrganizations(userId) {
+    return await this.$axios.$get(`/user/users/${userId}/myOrganizations`)
+  }
+
+  async changeOrganization(organizationId) {
+    return await this.$axios.$put(
+      `user/users/changeOrganization?organizationId=${organizationId}`
+    )
+  }
+
+  async whoami() {
+    return await this.$axios.$get(`/user/authentication/whoami`)
   }
 
   async getOrganizationImage(organizationUUID) {
@@ -59,10 +69,6 @@ class API_USERS {
 
   async getOrganizationRoles() {
     return await this.$axios.$get(`${this.apiEndpoint}/roles`)
-  }
-
-  async changeOrganization(organizationUUID) {
-    return await this.$axios.$post(`b2b/users/${organizationUUID}/blindLogin`)
   }
 
   async addOrganizationImage(image) {
@@ -117,4 +123,5 @@ class API_USERS {
     return await this.$axios.$get(`b2b/users/whoami`)
   }
 }
+
 export default new API_USERS()

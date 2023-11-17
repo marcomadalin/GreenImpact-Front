@@ -151,9 +151,9 @@ export default {
           property: false,
         },
         endpoints: {
-          login: { url: '/security/authentication/login', method: 'post' },
-          logout: { url: '/security/authentication/logout', method: 'post' },
-          user: { url: '/security/authentication/whoami', method: 'get' },
+          login: { url: '/user/authentication/login', method: 'post' },
+          logout: { url: '/user/authentication/logout', method: 'post' },
+          user: { url: '/user/authentication/whoami', method: 'get' },
         },
       },
     },

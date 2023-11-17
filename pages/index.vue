@@ -235,7 +235,6 @@ export default {
     let riskIndicators = []
     let pie = {}
     try {
-      console.log('INDEX PLANS')
       const plans = await API.init($axios).list()
 
       for (let i = 0; i < plans.length; i++) items.push(plans[i])
@@ -404,8 +403,6 @@ export default {
     }
   },
   data() {
-    console.log('AUTH:')
-    console.log(this.$auth)
     return {
       chartKey: 0,
       entityImage: null,
