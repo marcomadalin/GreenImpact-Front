@@ -360,7 +360,10 @@
             width="45px"
             v-on="on"
           >
-            {{ firstCapitalized($auth.user.name) }}
+            {{
+              firstCapitalized($auth.user.name) +
+              firstCapitalized($auth.user.surname)
+            }}
           </v-btn>
         </template>
         <v-list dense>
