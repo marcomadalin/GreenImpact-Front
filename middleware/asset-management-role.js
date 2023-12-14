@@ -2,9 +2,9 @@ import { roles } from '~/constants'
 
 export default function ({ $auth, redirect }) {
   if (
-    !$auth.user.roles.includes(roles.SUPER_ADMIN) &&
-    !$auth.user.roles.includes(roles.ADMIN) &&
-    !$auth.user.roles.includes(roles.EDITOR)
+    !($auth.user.role === roles.SUPER_ADMIN) &&
+    !($auth.user.role === roles.ADMIN) &&
+    !($auth.user.role === roles.EDITOR)
   ) {
     redirect('/')
   }

@@ -62,40 +62,40 @@
       </v-chip-group>
       <!-- fi llista de ODS afectats-->
     </v-img>
+    <!--
     <div v-if="plan.snapshot" class="bullets-pos">
       <semaphore :value="plan.snapshot" />
     </div>
+    -->
     <v-row v-if="plan" no-gutters class="pa-5 text-left">
       <v-col align-self="start">
         <p
           class="blue--text text-h3 plan-title mt-0 mb-0 pb-0 d-flex align-center"
         >
-          {{ truncateText(plan.planName, 37, '...') }}
+          {{ truncateText(plan.name, 37, '...') }}
         </p>
         <p class="mb-2 blue--text text-h5 mb-2">
-          {{ formatDate(plan.planStartDate) }} -
-          {{ formatDate(plan.planEndDate) }}
+          {{ formatDate(plan.startDate) }} -
+          {{ formatDate(plan.endDate) }}
         </p>
         <p class="text-body-2 primary--text mb-4">
-          {{ plan.areaDTOs.length + ' ' + $t('areas') + '' }} |
+          {{ plan.areas.length + ' ' + $t('areas') + '' }} |
           {{
-            new Set(
-              plan.areaDTOs
-                .map((i) => i.areaIndicatorDTOs.map((f) => f.indicatorUUID))
-                .flat()
-            ).size
+            new Set(plan.areas.map((i) => i.indicators.map((f) => f.id)).flat())
+              .size
           }}
           {{ $t('indicators') }}
         </p>
-        <!-- <v-divider class="mb-3"></v-divider> -->
+        <!-- <v-divider class="mb-3"></v-divider>
         <p class="card-progressbar mb-4">
           <card-progress :value="plan.snapshot" />
         </p>
+        -->
         <p
           v-if="showDescription"
           class="darkGray--text mb-4 text-body-1 plan-description mb-0"
         >
-          {{ plan.planDescription }}
+          {{ plan.description }}
         </p>
       </v-col>
       <v-col cols="12">
@@ -107,7 +107,7 @@
           class="text-body-2 primary--text"
           :to="{
             name: 'area-viewlist',
-            params: { plan: plan.planUUID },
+            params: { plan: plan.id },
           }"
         >
           {{ $t('seePlan') }}
@@ -117,10 +117,7 @@
   </v-container>
 </template>
 <script>
-import Semaphore from '~/components/Semaphore.vue'
-
 export default {
-  components: { Semaphore },
   props: {
     plan: {
       type: Object,
@@ -144,6 +141,8 @@ export default {
 
   computed: {
     _impact() {
+      return []
+      // eslint-disable-next-line no-unreachable
       return this.impact.filter(
         (i) =>
           i.indicatorsConsidered.filter(
@@ -152,6 +151,8 @@ export default {
       )
     },
     _impact1() {
+      return []
+      // eslint-disable-next-line no-unreachable
       const res = this.impact.filter(
         (i) =>
           i.indicatorsConsidered.filter(
@@ -164,7 +165,7 @@ export default {
   },
 
   async beforeMount() {
-    await this.getImage(this.plan.planUUID)
+    await this.getImage(this.plan.id)
   },
 
   methods: {
@@ -186,10 +187,13 @@ export default {
 
       return day + '-' + month + '-' + year
     },
-    async getImage(planUUID) {
+    getImage(planId) {
       try {
+        /*
         const path = await this.$axios.$get(`/b2b/plans/${planUUID}/imagePath`)
         this.imagePlan = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
+
+         */
       } catch (e) {
         console.log(e.response)
       }

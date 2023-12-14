@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <h1 class="blue--text text-h1 mb-3">
-      {{ plan.planUUID ? $t('editPlan') : $t('createNewPlan') }}
+      {{ plan.id ? $t('editPlan') : $t('createNewPlan') }}
     </h1>
     <p v-if="plan.planUUID" class="mb-10 text-body-1 blue--text">
-      {{ plan.planName }}
+      {{ plan.name }}
     </p>
 
     <plan-area-steps
@@ -51,13 +51,12 @@
 </template>
 
 <script>
-import { statusEnum } from '~/constants'
-import API from '~/api/plans'
+import API_PLANS from '~/api/plans'
 export default {
   middleware: ['asset-management-role'],
 
   async asyncData({ $axios, params, query }) {
-    const api = API.init($axios)
+    const api = API_PLANS.init($axios)
     let form = {}
     let plan = {}
     let image = null
@@ -67,11 +66,11 @@ export default {
       try {
         plan = await api.get(id)
         form = {
-          id: plan.planUUID,
-          name: plan.planName,
-          description: plan.planDescription,
-          startDate: plan.planStartDate,
-          endDate: plan.planEndDate,
+          id: plan.id,
+          name: plan.name,
+          description: plan.description,
+          startDate: plan.startDate,
+          endDate: plan.endDate,
         }
         try {
           const path = await $axios.$get(
@@ -99,18 +98,12 @@ export default {
     }
   },
 
-  computed: {
-    statusEnum() {
-      return statusEnum
-    },
-  },
-
   watch: {
     '$route.query': '$fetch',
   },
 
   beforeMount() {
-    this.api = API.init(this.$axios)
+    this.api = API_PLANS.init(this.$axios)
   },
 
   methods: {
@@ -126,12 +119,13 @@ export default {
       this.overlay = true
       try {
         this.plan = await this.api.create({
-          planName: this.form.name,
-          planDescription: this.form.description,
-          planStartDate: this.formatDate(this.form.startDate),
-          planEndDate: this.formatDate(this.form.endDate),
-          planStatus: statusEnum.IDEA.value,
-          planOrganizationUUID: this.$auth.user.loggedOrganizationUuid,
+          id: null,
+          name: this.form.name,
+          description: this.form.description,
+          startDate: this.formatDate(this.form.startDate),
+          endDate: this.formatDate(this.form.endDate),
+          organizationId: this.$auth.user.loggedOrganization.id,
+          areas: [],
         })
         if (this.tmpImage) {
           await this.addImage(this.tmpImage)
@@ -143,7 +137,7 @@ export default {
         this.$nextTick(() => {
           this.$router.push({
             name: 'plan-area-list',
-            query: { plan: this.plan.planUUID },
+            query: { plan: this.plan.id },
           })
         })
       } catch (e) {
@@ -160,15 +154,18 @@ export default {
       try {
         const dateParts = this.form.startDate.split('-')
         const formatNeeded = dateParts[2].length === 4
-        this.plan = await this.api.update(this.plan.planUUID, {
-          planName: this.form.name,
-          planDescription: this.form.description,
-          planStartDate: formatNeeded
+        this.plan = await this.api.update(this.plan.id, {
+          id: this.form.id,
+          name: this.form.name,
+          description: this.form.description,
+          startDate: formatNeeded
             ? this.formatDate(this.form.startDate)
             : this.form.startDate,
-          planEndDate: formatNeeded
+          endDate: formatNeeded
             ? this.formatDate(this.form.endDate)
             : this.form.endDate,
+          organizationId: this.form.organizationId,
+          areas: this.form.areas,
         })
         this.overlay = false
         this.successText = 'planUpdated'
@@ -177,7 +174,7 @@ export default {
         this.$nextTick(() => {
           this.$router.push({
             name: 'area-list',
-            params: { plan: this.plan.planUUID },
+            params: { plan: this.plan.id },
           })
         })
       } catch (e) {
@@ -196,7 +193,7 @@ export default {
     async remove() {
       this.overlay = true
       try {
-        await this.api.remove(this.plan.planUUID)
+        await this.api.remove(this.plan.id)
         this.overlay = false
         this.successText = 'planDeleted'
         this.ok = true

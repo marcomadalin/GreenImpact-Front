@@ -57,7 +57,7 @@
                       <p class="grey--text mb-0 text-caption">
                         {{ $t('planName') }}
                       </p>
-                      <p class="body-2 darkGray--text">{{ item.planName }}</p>
+                      <p class="body-2 darkGray--text">{{ item.name }}</p>
                     </div>
                   </v-col>
                   <!-- v-col>
@@ -77,7 +77,7 @@
                       {{ $t('totalAreas') }}
                     </p>
                     <p class="body-2 darkGray--text">
-                      {{ item.areaDTOs.length }}
+                      {{ item.areas.length }}
                     </p>
                   </v-col>
                   <v-col>
@@ -87,10 +87,8 @@
                     <p class="body-2 darkGray--text">
                       {{
                         new Set(
-                          item.areaDTOs
-                            .map((i) =>
-                              i.areaIndicatorDTOs.map((f) => f.indicatorUUID)
-                            )
+                          item.areas
+                            .map((i) => i.indicators.map((f) => f.id))
                             .flat()
                         ).size
                       }}
@@ -101,7 +99,7 @@
                       {{ $t('startDate') }}
                     </p>
                     <p class="body-2 darkGray--text">
-                      {{ formatDate(item.planStartDate) }}
+                      {{ formatDate(item.startDate) }}
                     </p>
                   </v-col>
                   <v-col>
@@ -109,7 +107,7 @@
                       {{ $t('endDate') }}
                     </p>
                     <p class="body-2 darkGray--text">
-                      {{ formatDate(item.planEndDate) }}
+                      {{ formatDate(item.endDate) }}
                     </p>
                   </v-col>
                   <v-spacer></v-spacer>
@@ -122,7 +120,7 @@
                       elevation="0"
                       :to="{
                         name: 'area-list',
-                        params: { plan: item.planUUID },
+                        params: { plan: item.id },
                       }"
                       >{{ $t('planManagement') }}</v-btn
                     >
@@ -143,7 +141,7 @@
                       elevation="0"
                       :to="{
                         name: 'plan-update',
-                        params: { id: item.planUUID },
+                        params: { id: item.id },
                       }"
                     >
                       <img
@@ -163,8 +161,7 @@
 </template>
 
 <script>
-import { statusEnum } from '~/constants'
-import API from '~/api/plans'
+import API_PLANS from '~/api/plans'
 import API_LOGBOOK from '~/api/logbook'
 export default {
   middleware: ['asset-management-role'],
@@ -172,16 +169,18 @@ export default {
     let items = []
     let logbooks = []
     const imagePlan = {}
-
     try {
       try {
         logbooks = await API_LOGBOOK.init($axios).getPlanLogbooks(
           $auth.user.loggedOrganizationUuid
         )
       } catch (e) {
-        console.log(e.response)
+        logbooks = []
+        // console.log(e.response)
       }
-      items = await API.init($axios).list()
+      items = await API_PLANS.init($axios).list(
+        $auth.user.loggedOrganization.id
+      )
       for (let i = 0; i < items.length; i++) {
         items[i].logbook = null
         for (let j = 0; j < logbooks.length; ++j) {
@@ -194,23 +193,17 @@ export default {
           }
         }
       }
-      await Promise.all(
-        items.map(async (i) => {
-          const path = await $axios.$get(`/b2b/plans/${i.planUUID}/imagePath`)
-          imagePlan[
-            i.planUUID
-          ] = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
-        })
-      )
+      items.forEach((i) => {
+        imagePlan[
+          i.planUUID
+        ] = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/images/plans/${
+          i.id
+        }?${Math.random()}`
+      })
     } catch (e) {
-      console.log(e.response)
+      // console.log(e.response)
     }
     return { items, imagePlan }
-  },
-  computed: {
-    statusEnum() {
-      return statusEnum
-    },
   },
   methods: {
     formatDate(date) {

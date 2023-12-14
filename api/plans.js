@@ -1,4 +1,4 @@
-class API {
+class API_PLANS {
   apiEndpoint = '/b2b/plans'
 
   init($axios) {
@@ -6,24 +6,24 @@ class API {
     return this
   }
 
-  async list() {
-    return await this.$axios.$get(`${this.apiEndpoint}/`)
+  async list(organizationId) {
+    return await this.$axios.$get(`plan/plans/${organizationId}/all`)
   }
 
   async create(data) {
-    return await this.$axios.$post(`${this.apiEndpoint}/new/`, data)
+    return await this.$axios.$post(`plan/plans/new`, data)
   }
 
   async get(id) {
-    return await this.$axios.$get(`${this.apiEndpoint}/${id}`)
+    return await this.$axios.$get(`plan/plans/${id}`)
   }
 
   async update(id, data) {
-    return await this.$axios.$put(`${this.apiEndpoint}/${id}`, data)
+    return await this.$axios.$put(`plan/plans/${id}`, data)
   }
 
   async remove(id) {
-    return await this.$axios.$delete(`${this.apiEndpoint}/${id}`)
+    return await this.$axios.$delete(`plan/plans/${id}`)
   }
 
   async addImage(id, image, cb) {
@@ -59,4 +59,4 @@ class API {
     return await this.$axios.$delete(`${this.apiEndpoint}/${id}/image`)
   }
 }
-export default new API()
+export default new API_PLANS()

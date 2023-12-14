@@ -454,13 +454,14 @@ export default {
           title: this.$t('indicators'),
           icon: 'indicators.svg',
           to: { name: 'indicators-explorer' },
-        },
+        } /*
         {
           title: this.$t('communication'),
           icon: 'communication.svg',
           disabled: false,
           to: { name: 'communication' },
         },
+        */,
       ]
     },
     menuAdminItems() {
