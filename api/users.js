@@ -81,12 +81,33 @@ class API_USERS {
     return await this.$axios.$delete(`${this.apiEndpoint}/image`)
   }
 
-  async changePassword(data) {
-    return await this.$axios.$post(`b2b/users/changePassword`, data)
+  async updateData(data) {
+    return await this.$axios.$put(`user/users/${data.id}`, data)
   }
 
-  async updateData(data) {
-    return await this.$axios.$put(`b2b/users/update`, data)
+  async updateLocale(id, locale) {
+    return await this.$axios.$put(
+      `user/users/changeLocale/${id}`,
+      {},
+      {
+        params: {
+          locale,
+        },
+      }
+    )
+  }
+
+  async changePassword(id, oldPassword, newPassword) {
+    return await this.$axios.$put(
+      `user/users/updatePassword/${id}`,
+      {},
+      {
+        params: {
+          oldPassword,
+          newPassword,
+        },
+      }
+    )
   }
 
   async getUserSignupData(token) {

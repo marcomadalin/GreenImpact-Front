@@ -1,6 +1,6 @@
 <template>
   <v-container fluid px-8 pt-8>
-    <h1 class="blue--text text-h1 mb-6">{{ plan.planName }}</h1>
+    <h1 class="blue--text text-h1 mb-6">{{ plan.name }}</h1>
     <div
       v-if="allAreas.length < 1"
       class="d-flex align-center justify-center text-center"
@@ -41,7 +41,7 @@
       <v-list v-if="allAreas.length" color="transparent" class="pa-0">
         <v-list-item v-for="(item, i) in allAreas" :key="i" class="pa-0">
           <area-list-view-item
-            :id="'area-' + item.areaId"
+            :id="'area-' + item.id"
             :area-item="item"
             :impact="impact"
             @remove="remove"
@@ -80,8 +80,7 @@
 </template>
 
 <script>
-import { statusEnum } from '~/constants'
-import API from '~/api/plans'
+import API_PLANS from '~/api/plans'
 import APIAreas from '~/api/areas'
 import APIMa2030 from '~/api/framework_ma2030'
 import API_LOGBOOK from '~/api/logbook'
@@ -96,7 +95,7 @@ export default {
 
     if (id) {
       try {
-        plan = await API.init($axios).get(id)
+        plan = await API_PLANS.init($axios).get(id)
       } catch (e) {
         console.log(e.response)
       }
@@ -104,7 +103,8 @@ export default {
       try {
         impact = await APIMa2030.init($axios).plansImpact([id])
       } catch (e) {
-        console.log(e.response)
+        impact = []
+        // console.log(e.response)
       }
 
       let logbooks = []
@@ -113,7 +113,7 @@ export default {
           $auth.user.loggedOrganizationUuid
         )
       } catch (e) {
-        console.log(e.response)
+        // console.log(e.response)
       }
       plan.logbook = null
       for (let j = 0; j < logbooks.length; ++j) {
@@ -132,23 +132,24 @@ export default {
           id
         )
       } catch (e) {
-        console.log(e.response)
+        // console.log(e.response)
       }
 
-      for (let i = 0; i < plan.areaDTOs.length; ++i) {
-        allAreas.push(plan.areaDTOs[i])
+      for (let i = 0; i < plan.areas.length; ++i) {
+        allAreas.push(plan.areas[i])
         allAreas[i].logbook = null
         for (let j = 0; j < logbooksAreas.length; ++j) {
           if (
             logbooksAreas[j].logBookType === 'AREA' &&
-            logbooksAreas[j].planUUID === allAreas[i].plan.planUUID &&
-            logbooksAreas[j].areaId === allAreas[i].areaId
+            logbooksAreas[j].planId === allAreas[i].plan.id &&
+            logbooksAreas[j].areaId === allAreas[i].id
           ) {
             allAreas[i].logbook = logbooksAreas[j]
             break
           }
         }
       }
+      console.log(allAreas)
     }
     return {
       planUUID: id,
@@ -166,13 +167,6 @@ export default {
   },
 
   computed: {
-    statusEnum() {
-      return statusEnum
-    },
-    userRole() {
-      // return this.$auth.user.userOrganizations[0].roles[0].roleName
-      return this.$auth.user.roles[0]
-    },
     showGoToTop() {
       return this.offsetTop > 200
     },
@@ -201,17 +195,12 @@ export default {
 
     reloadPage() {
       this.$router.app.refresh()
-      // if (window) {
-      //   window.location.reload()
-      // } else {
-      //   this.$router.app.refresh()
-      // }
     },
 
     async remove({ area, areaIndicatorId }) {
       this.overlay = true
       try {
-        await this.apiAreas.deleteIndicator(area.areaId, areaIndicatorId)
+        await this.apiAreas.deleteIndicator(area.id, areaIndicatorId)
         this.overlay = false
         this.reloadPage()
       } catch (e) {
@@ -224,7 +213,7 @@ export default {
       this.overlay = true
       try {
         await this.apiAreas.removeIndicatorObjective(
-          area.areaId,
+          area.id,
           areaIndicatorId,
           objectiveId
         )
@@ -240,7 +229,7 @@ export default {
       this.overlay = true
       try {
         await this.apiAreas.removeIndicatorSample(
-          area.areaId,
+          area.id,
           areaIndicatorId,
           sampleId
         )

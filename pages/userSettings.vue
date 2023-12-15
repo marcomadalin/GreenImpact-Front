@@ -85,7 +85,7 @@
                 {{ $t('entityName') }}
               </p>
               <p class="body-2 darkGray--text">
-                {{ org.organization.organizationName }}
+                {{ org.name }}
               </p>
             </div>
           </v-col>
@@ -127,9 +127,10 @@
     >
       {{ $t('updatePassword') }}
     </v-btn>
-    <!--
     <v-divider class="my-10"></v-divider>
-    <h3 style="color: #011d89 !important" class="primary--text mb-5">{{ $t('email') }}</h2>
+    <h3 style="color: #011d89 !important" class="primary--text mb-5">
+      {{ $t('email') }}
+    </h3>
     <p class="body-2 darkGray--text mb-1 pb-0">
       {{ $t('emailText1') }}
       <span class="font-weight-bold">{{ email }}</span>
@@ -146,10 +147,12 @@
       depressed
       elevation="0"
       color="primary"
-      class="text-body-2 white--text" disabled>
+      class="text-body-2 white--text"
+      disabled
+    >
       {{ $t('updateEmail') }}
     </v-btn>
-    -->
+
     <v-snackbar
       v-model="ok"
       style="margin-top: 70px"
@@ -175,26 +178,17 @@ import API_USERS from '~/api/users'
 export default {
   async asyncData({ $axios, $auth }) {
     let organizations = []
-    let user = {}
+    const user = $auth.user
+    console.log(user)
     const API = API_USERS.init($axios, $auth.user.loggedOrganizationUuid)
     try {
-      organizations = await API.getOrganizations()
+      organizations = await API.getOrganizations($auth.user.id)
       organizations = await Promise.all(
-        organizations.map(async (org) => {
-          const path = await API.getOrganizationImage(
-            org.organization.organizationUUID
-          )
+        organizations.map((org) => {
+          const path = 'filler' // await API.getOrganizationImage(org.organization.organizationUUID)
 
           // TODO: this s3 should not be hardcoded!
           org.image = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
-
-          if (
-            $auth.user.loggedOrganizationUuid ===
-            org.organization.organizationUUID
-          ) {
-            user = org.user
-          }
-
           return org
         })
       )
@@ -249,20 +243,15 @@ export default {
 
   computed: {
     locales() {
-      return this.$i18n.locales.map((i) => {
-        return {
-          text: `${this.$t(i.code)} (${i.code.toUpperCase()})`,
-          value: i.code,
-        }
-      })
+      return this.$i18n.locales.map((i) => i.code)
     },
   },
 
   beforeMount() {
-    this.firstName = this.user.firstName
-    this.lastName = this.user.lastName
+    this.firstName = this.user.name
+    this.lastName = this.user.surname
     this.phoneNumber = this.user.phoneNumber
-    this.email = this.user.email
+    this.email = this.user.username
   },
 
   methods: {
@@ -270,10 +259,15 @@ export default {
       try {
         this.overlay = true
         await API_USERS.init(this.$axios, this.organizationUUID).updateData({
-          ...this.user,
-          firstName: this.firstName,
-          lastName: this.lastName,
+          id: this.user.id,
+          username: this.user.username,
+          password: this.user.password,
+          name: this.firstName,
+          surname: this.lastName,
+          locale: this.user.locale,
           phoneNumber: this.phoneNumber,
+          loggedOrganization: this.user.loggedOrganization,
+          role: this.user.role,
         })
 
         this.overlay = false
@@ -289,10 +283,10 @@ export default {
     async updateLocale() {
       try {
         this.overlay = true
-        await API_USERS.init(this.$axios, this.organizationUUID).updateData({
-          ...this.user,
-          locale: this.currentLang,
-        })
+        await API_USERS.init(this.$axios, this.organizationUUID).updateLocale(
+          this.user.id,
+          this.currentLang
+        )
         this.overlay = false
         this.successText = 'langUpdated'
         this.colorSnackbar = '#12BB6A'
@@ -307,10 +301,9 @@ export default {
       try {
         this.overlay = true
         await API_USERS.init(this.$axios, this.organizationUUID).changePassword(
-          {
-            oldPassword: this.typedPassword,
-            newPassword: this.newPassword,
-          }
+          this.user.id,
+          this.typedPassword,
+          this.newPassword
         )
         this.overlay = false
         this.successText = 'passwordUpdated'

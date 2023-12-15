@@ -78,10 +78,8 @@
 </template>
 
 <script>
-import { statusEnum } from '~/constants'
-import API from '~/api/plans'
+import API_PLAN from '~/api/plans'
 import APIAreas from '~/api/areas'
-import APIMa2030 from '~/api/framework_ma2030'
 import API_LOGBOOK from '~/api/logbook'
 export default {
   name: 'AreaList',
@@ -95,13 +93,13 @@ export default {
 
     if (id) {
       try {
-        plan = await API.init($axios).get(id)
+        plan = await API_PLAN.init($axios).get(id)
       } catch (e) {
         console.log(e.response)
       }
 
       try {
-        impact = await APIMa2030.init($axios).plansImpact([id])
+        impact = [] // await APIMa2030.init($axios).plansImpact([id])
       } catch (e) {
         console.log(e.response)
       }
@@ -114,9 +112,9 @@ export default {
         id
       )
     } catch (e) {
-      console.log(e.response)
+      // console.log(e.response)
     }
-    const allAreas = plan.areaDTOs || []
+    const allAreas = plan.areas || []
 
     for (let i = 0; i < allAreas.length; i++) {
       allAreas[i].logbook = null
@@ -141,18 +139,6 @@ export default {
       componentKey: 0,
     }
   },
-
-  computed: {
-    statusEnum() {
-      return statusEnum
-    },
-
-    userRole() {
-      // return this.$auth.user.userOrganizations[0].roles[0].roleName
-      return this.$auth.user.roles[0]
-    },
-  },
-
   beforeMount() {
     this.apiAreas = APIAreas.init(this.$axios, this.planUUID)
   },
@@ -165,7 +151,7 @@ export default {
     async remove({ area, areaIndicatorId }) {
       this.overlay = true
       try {
-        await this.apiAreas.deleteIndicator(area.areaId, areaIndicatorId)
+        await this.apiAreas.deleteIndicator(area.id, areaIndicatorId)
         this.overlay = false
         this.reloadPage()
       } catch (e) {
@@ -178,7 +164,7 @@ export default {
       this.overlay = true
       try {
         await this.apiAreas.removeIndicatorObjective(
-          area.areaId,
+          area.id,
           areaIndicatorId,
           objectiveId
         )
@@ -194,7 +180,7 @@ export default {
       this.overlay = true
       try {
         await this.apiAreas.removeIndicatorSample(
-          area.areaId,
+          area.id,
           areaIndicatorId,
           sampleId
         )
