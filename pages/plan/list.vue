@@ -172,7 +172,7 @@ export default {
     try {
       try {
         logbooks = await API_LOGBOOK.init($axios).getPlanLogbooks(
-          $auth.user.loggedOrganizationUuid
+          $auth.user.loggedOrganization.id
         )
       } catch (e) {
         logbooks = []

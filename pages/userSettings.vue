@@ -180,7 +180,7 @@ export default {
     let organizations = []
     const user = $auth.user
     console.log(user)
-    const API = API_USERS.init($axios, $auth.user.loggedOrganizationUuid)
+    const API = API_USERS.init($axios)
     try {
       organizations = await API.getOrganizations($auth.user.id)
       organizations = await Promise.all(
@@ -258,7 +258,7 @@ export default {
     async updateData() {
       try {
         this.overlay = true
-        await API_USERS.init(this.$axios, this.organizationUUID).updateData({
+        await API_USERS.init(this.$axios).updateData({
           id: this.user.id,
           username: this.user.username,
           password: this.user.password,
@@ -283,7 +283,7 @@ export default {
     async updateLocale() {
       try {
         this.overlay = true
-        await API_USERS.init(this.$axios, this.organizationUUID).updateLocale(
+        await API_USERS.init(this.$axios).updateLocale(
           this.user.id,
           this.currentLang
         )
@@ -300,7 +300,7 @@ export default {
     async updatePassword() {
       try {
         this.overlay = true
-        await API_USERS.init(this.$axios, this.organizationUUID).changePassword(
+        await API_USERS.init(this.$axios).changePassword(
           this.user.id,
           this.typedPassword,
           this.newPassword

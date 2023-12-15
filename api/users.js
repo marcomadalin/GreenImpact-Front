@@ -1,11 +1,6 @@
 class API_USERS {
-  organizationUUID = null
-  apiEndpoint = '/user/'
-
-  init($axios, organizationUUID) {
+  init($axios) {
     this.$axios = $axios
-    this.organizationUUID = organizationUUID
-    this.apiEndpoint = `/user/${this.organizationUUID}`
     return this
   }
 

@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    style="width: 410px"
+    style="width: 610px"
     class="white rounded-lg plain-shadow pa-4"
   >
     <v-row>
@@ -9,7 +9,10 @@
         <h3 class="blue--text text-h3">{{ $t('entityInfo') }}</h3>
       </v-col>
       <v-spacer v-if="isSuperAdminRole"> </v-spacer>
-      <v-col v-if="isSuperAdminRole">
+      <v-col
+        v-if="isSuperAdminRole"
+        style="display: flex; justify-content: flex-end"
+      >
         <v-btn rounded small color="#e6e6eb" elevation="0">
           <img
             class="icon"
@@ -24,7 +27,7 @@
         <p class="grey--text mb-1 text-caption">
           {{ $t('license') }}
         </p>
-        <p class="body-2 darkGray--text mb-0">{{ license.licenseCode }}</p>
+        <p class="body-2 darkGray--text mb-0">{{ license.key }}</p>
       </v-col>
     </v-row>
     <v-row style="margin-bottom: 0px">

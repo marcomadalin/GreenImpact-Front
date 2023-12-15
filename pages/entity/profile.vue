@@ -1,6 +1,6 @@
 <template>
   <v-container :key="componentKey" fluid class="px-10">
-    <h1 class="blue--text text-h1 mb-10">{{ org.organizationName }}</h1>
+    <h1 class="blue--text text-h1 mb-10">{{ org.name }}</h1>
     <v-row>
       <v-col cols="auto" style="display: flex">
         <v-img class="plain-shadow imageProfile" :src="org.image" />
@@ -57,7 +57,7 @@
             <p class="grey--text mb-1 text-caption">
               {{ $t('prodName') }}
             </p>
-            <p class="body-2 darkGray--text">{{ item.productName }}</p>
+            <p class="body-2 darkGray--text">{{ item.name }}</p>
           </v-col>
           <v-spacer />
           <v-col cols="2">
@@ -70,12 +70,10 @@
                   <v-badge
                     dot
                     inline
-                    :color="item.productEnabled ? 'green' : '#C0C0C0'"
+                    :color="item.enabled ? 'green' : '#C0C0C0'"
                   ></v-badge>
                   {{
-                    item.productEnabled
-                      ? $t('productActive')
-                      : $t('productInactive')
+                    item.enabled ? $t('productActive') : $t('productInactive')
                   }}
                 </p>
               </v-col>
@@ -109,32 +107,29 @@
 
 <script>
 import API_USERS from '~/api/users'
+import API_PRODUCTS from '~/api/products'
 export default {
   middleware: ['admin-role'],
   async asyncData({ $axios, $auth }) {
     let org = null
     let license = null
     try {
-      const API = await API_USERS.init(
-        $axios,
-        $auth.user.loggedOrganizationUuid
-      )
+      const orgs = await API_USERS.init($axios).getOrganizations($auth.user.id)
 
-      const orgs = await API.getOrganizations()
       for (const organization of orgs) {
-        if (
-          organization.organization.organizationUUID ===
-          $auth.user.loggedOrganizationUuid
-        ) {
-          org = organization.organization
+        if (organization.id === $auth.user.loggedOrganization.id) {
+          org = organization
           break
         }
       }
 
-      const path = await API.getOrganizationImage(org.organizationUUID)
+      const path = 'filler' // await API.getOrganizationImage(org.organizationUUID)
       org.image = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
 
-      const licenses = await API.getLicenses(org.organizationUUID)
+      const licenses = await API_PRODUCTS.init($axios).getAllLicenses(
+        $auth.user.loggedOrganization.id
+      )
+
       for (const lice of licenses) {
         if (lice.active) {
           license = lice
