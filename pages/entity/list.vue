@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import API_USERS from '~/api/users'
+import API_ORGANIZATIONS from '~/api/organizations'
 import EntityListItem from '~/components/EntityListItem.vue'
 
 export default {
@@ -159,10 +159,7 @@ export default {
     const imagePlan = {}
     const page = 1
     try {
-      allItems = await API_USERS.init(
-        $axios,
-        $auth.user.loggedOrganizationUuid
-      ).getAllOrganizations()
+      allItems = await API_ORGANIZATIONS.init($axios).getAllOrganizations()
 
       numPages = Math.ceil(allItems.length / numItems)
       const startIndex = 0
@@ -170,12 +167,11 @@ export default {
       const finalIndex = endIndex > allItems.length ? allItems.length : endIndex
       filteredItems = allItems.slice(0, allItems.length)
       filteredItems.sort((a, b) =>
-        a.organizationName.toLowerCase() + a.organizationName.toLowerCase() >
-        b.organizationName.toLowerCase() + b.organizationName.toLowerCase()
+        a.name.toLowerCase() + a.name.toLowerCase() >
+        b.name.toLowerCase() + b.name.toLowerCase()
           ? 1
-          : b.organizationName.toLowerCase() +
-              b.organizationName.toLowerCase() >
-            a.organizationName.toLowerCase() + a.organizationName.toLowerCase()
+          : b.name.toLowerCase() + b.name.toLowerCase() >
+            a.name.toLowerCase() + a.name.toLowerCase()
           ? -1
           : 0
       )
@@ -211,7 +207,7 @@ export default {
       this.filteredItems = []
       const searchText = this.search.toLowerCase()
       for (let i = 0; i < this.allItems.length; i++) {
-        const name = this.allItems[i].organizationName.toLowerCase()
+        const name = this.allItems[i].name.toLowerCase()
 
         if (name.includes(searchText)) {
           this.filteredItems.push(this.allItems[i])
@@ -224,30 +220,24 @@ export default {
         const newFilteredItems = []
         for (let i = 0; i < this.filteredItems.length; i++) {
           let added = false
-          if (
-            this.checkboxes[0] &&
-            this.filteredItems[i].organizationBack2BluType === 'SYS_MASTER'
-          ) {
+          if (this.checkboxes[0] && this.filteredItems[i].type === 'MASTER') {
             newFilteredItems.push(this.filteredItems[i])
             added = true
           } else if (
             this.checkboxes[1] &&
-            this.filteredItems[i].organizationBack2BluType ===
-              'SYS_CLUSTER_MASTER'
+            this.filteredItems[i].type === 'CLUSTER_MASTER'
           ) {
             newFilteredItems.push(this.filteredItems[i])
             added = true
           } else if (
             this.checkboxes[2] &&
-            this.filteredItems[i].organizationBack2BluType ===
-              'SYS_CLUSTER_ENTITY'
+            this.filteredItems[i].type === 'CLUSTER_ENTITY'
           ) {
             newFilteredItems.push(this.filteredItems[i])
             added = true
           } else if (
             this.checkboxes[3] &&
-            this.filteredItems[i].organizationBack2BluType ===
-              'SYS_SUSTAINABLE_ENTITY'
+            this.filteredItems[i].type === 'SUSTAINABLE_ENTITY'
           ) {
             newFilteredItems.push(this.filteredItems[i])
             added = true
@@ -259,20 +249,20 @@ export default {
             this.checkboxes[3]
           )
           if (added) {
-            if (this.checkboxes[4] && this.filteredItems[i].disabled)
+            if (this.checkboxes[4] && !this.filteredItems[i].enabled)
               newFilteredItems.pop()
             else if (this.checkboxes[5] && this.filteredItems[i].enabled)
               newFilteredItems.pop()
           } else if (
             noTypeSelected &&
             this.checkboxes[4] &&
-            this.filteredItems[i].organizationEnabled
+            this.filteredItems[i].enabled
           )
             newFilteredItems.push(this.filteredItems[i])
           else if (
             noTypeSelected &&
             this.checkboxes[5] &&
-            !this.filteredItems[i].organizationEnabled
+            !this.filteredItems[i].enabled
           )
             newFilteredItems.push(this.filteredItems[i])
         }

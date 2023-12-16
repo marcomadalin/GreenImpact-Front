@@ -14,12 +14,14 @@
       </v-stepper-step>
       <v-stepper-content step="1" editable>
         <v-select
-          v-model="acronims"
+          v-model="selectedProducts"
           clearable
           multiple
           :items="entityProducts"
           filled
           :label="$t('entityProducts')"
+          item-text="name"
+          return-object
         />
         <step-buttons-group @next="step = 2" @cancel="returnListPage" />
       </v-stepper-content>
@@ -131,7 +133,7 @@
 </template>
 
 <script>
-import API_USERS from '~/api/users'
+import API_PRODUCTS from '~/api/products'
 import StepButtonsGroup from '~/components/StepButtonsGroup.vue'
 
 export default {
@@ -140,17 +142,20 @@ export default {
 
   data() {
     const license = {
-      organizationId: this.$route.params.entity.organizationId,
+      id: null,
+      organizationId: this.$route.params.uuid,
+      key: null,
       startDate: null,
       endDate: null,
       enabled: true,
+      active: true,
       products: [],
     }
     return {
       step: 1,
       license,
       entityProducts: [],
-      acronims: [],
+      selectedProducts: [],
       dialog: false,
       ok: null,
       overlay: false,
@@ -162,16 +167,9 @@ export default {
   },
   async beforeMount() {
     try {
-      const products = await API_USERS.init(
-        this.$axios,
-        this.$auth.user.loggedOrganizationUuid
+      this.entityProducts = await API_PRODUCTS.init(
+        this.$axios
       ).getAllProducts()
-      for (let i = 0; i < products.length; i++) {
-        this.entityProducts.push(products[i].productAcronym)
-        for (let j = 0; j < products[i].childProducts.length; j++) {
-          this.entityProducts.push(products[i].childProducts[j].productAcronym)
-        }
-      }
     } catch (e) {
       console.log(e)
     }
@@ -182,13 +180,11 @@ export default {
       try {
         this.license.startDate = this.parseDate(this.license.startDate)
         this.license.endDate = this.parseDate(this.license.endDate)
-        for (let i = 0; i < this.acronims.length; ++i) {
-          this.license.products.push({ productAcronym: this.acronims[i] })
+        for (let i = 0; i < this.selectedProducts.length; ++i) {
+          this.license.products.push(this.selectedProducts[i])
         }
-        await API_USERS.init(
-          this.$axios,
-          this.$auth.user.loggedOrganizationUuid
-        ).addLicense(this.$route.params.uuid, this.license)
+        console.log(this.license)
+        await API_PRODUCTS.init(this.$axios).createLicense(this.license)
         this.overlay = false
         this.ok = true
         setTimeout(() => this.returnListPage(), 1500)

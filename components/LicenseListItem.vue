@@ -53,10 +53,12 @@
               <v-badge
                 dot
                 inline
-                :color="license.enabled ? 'green' : 'red'"
+                :color="license.enabled && license.active ? 'green' : 'red'"
               ></v-badge>
               {{
-                license.enabled ? $t('productActive') : $t('licenseInactive')
+                license.enabled && license.active
+                  ? $t('productActive')
+                  : $t('licenseInactive')
               }}
             </p>
           </v-col>

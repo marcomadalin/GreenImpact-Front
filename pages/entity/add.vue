@@ -3,7 +3,7 @@
     <h1 class="primary--text">
       {{
         $route.params.entity != null
-          ? $route.params.entity.organizationName
+          ? $route.params.entity.name
           : $t('newOrganization')
       }}
     </h1>
@@ -43,7 +43,7 @@
 
 <script>
 import EntitySteps from '~/components/EntitySteps.vue'
-import API_USERS from '~/api/users'
+import API_ORGANIZATIONS from '~/api/organizations'
 
 export default {
   components: { EntitySteps },
@@ -62,10 +62,7 @@ export default {
   },
   async beforeMount() {
     try {
-      this.api = await API_USERS.init(
-        this.$axios,
-        this.$auth.user.loggedOrganizationUuid
-      )
+      this.api = await API_ORGANIZATIONS.init(this.$axios)
     } catch (e) {
       console.log(e.response)
     }
@@ -75,11 +72,11 @@ export default {
       this.overlay = true
       try {
         const organization = {
-          organizationUUID: self.crypto.randomUUID(),
-          organizationName: this.form.organizationName,
-          organizationBack2BluType: this.form.organizationBack2BluType,
-          organizationEnabled: true,
-          parentOrganizationUUID: null,
+          id: null,
+          name: this.form.organizationName,
+          type: this.form.organizationBack2BluType,
+          enabled: true,
+          roles: null,
         }
         await this.api.createOrganization(organization)
         this.overlay = false
@@ -90,7 +87,7 @@ export default {
         this.overlay = false
       }
     },
-    async updateOrganization(organizationUUID) {
+    async updateOrganization() {
       this.overlay = true
       try {
         this.overlay = false
@@ -101,7 +98,7 @@ export default {
         this.overlay = false
       }
     },
-    async deleteOrganization(organizationUUID) {
+    async deleteOrganization() {
       this.overlay = true
       try {
         this.overlay = false

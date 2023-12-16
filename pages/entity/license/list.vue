@@ -2,11 +2,16 @@
   <v-container :key="componentKey" class="mx-auto my-10">
     <h1 class="blue--text text-h1 mb-10">{{ $t('licenses') }}</h1>
     <v-row class="mx-1">
-      <h3 style="color: #011d89 !important" class="primary--text mb-5">
-        {{ $route.params.entity.organizationName }}
+      <h3
+        v-if="organization"
+        style="color: #011d89 !important"
+        class="primary--text mb-5"
+      >
+        {{ organization.name }}
       </h3>
       <v-spacer></v-spacer>
       <v-btn
+        v-if="organization"
         rounded
         text-lowercase
         elevation="0"
@@ -15,8 +20,8 @@
         :to="{
           name: 'license-add',
           params: {
-            uuid: $route.params.uuid,
-            entity: $route.params.entity,
+            uuid: organization.id,
+            entity: organization,
           },
         }"
       >
@@ -52,14 +57,16 @@
 </template>
 
 <script>
-import API_USERS from '~/api/users'
 import LicenseListItem from '~/components/LicenseListItem.vue'
+import API_PRODUCTS from '~/api/products'
+import API_ORGANIZATIONS from '~/api/organizations'
 
 export default {
   components: { LicenseListItem },
   middleware: ['super-admin-role'],
   data() {
     return {
+      organization: null,
       ok: null,
       overlay: false,
       successText: '',
@@ -70,11 +77,12 @@ export default {
   },
   async beforeMount() {
     try {
-      this.api = await API_USERS.init(
-        this.$axios,
-        this.$auth.user.loggedOrganizationUuid
+      this.organization = await API_ORGANIZATIONS.init(
+        this.$axios
+      ).getOrganization(this.$route.params.uuid)
+      this.licenses = await API_PRODUCTS.init(this.$axios).getAllLicenses(
+        this.$route.params.uuid
       )
-      this.licenses = await this.api.getLicenses(this.$route.params.uuid)
     } catch (e) {
       console.log(e)
     }
@@ -83,10 +91,7 @@ export default {
     async deleteLicense(license) {
       this.overlay = true
       try {
-        await API_USERS.init(
-          this.$axios,
-          this.$auth.user.loggedOrganizationUuid
-        ).deleteLicense(this.$route.params.uuid, license.licenseId)
+        await API_PRODUCTS.init(this.$axios).deleteLicense(license.id)
         this.successText = 'licenseDeleted'
         this.overlay = false
         this.ok = true

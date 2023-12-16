@@ -96,7 +96,7 @@ export default {
       form: {
         organizationName: this.value.organizationName || '',
         organizationBack2BluType:
-          this.value.organizationBack2BluType || 'SYS_MASTER',
+          this.value.organizationBack2BluType || 'MASTER',
       },
       dialog: false,
     }
@@ -105,10 +105,10 @@ export default {
   computed: {
     entityTypeList() {
       return [
-        'SYS_MASTER',
-        'SYS_CLUSTER_MASTER',
-        'SYS_CLUSTER_ENTITY',
-        'SYS_SUSTAINABLE_ENTITY',
+        'MASTER',
+        'CLUSTER_MASTER',
+        'CLUSTER_ENTITY',
+        'SUSTAINABLE_ENTITY',
       ]
     },
   },

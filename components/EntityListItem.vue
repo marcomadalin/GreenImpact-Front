@@ -20,7 +20,7 @@
                   {{ $t('name') }}
                 </p>
                 <p class="body-2 darkGray--text">
-                  {{ entity.organizationName }}
+                  {{ entity.name }}
                 </p>
               </div>
             </v-col>
@@ -29,7 +29,7 @@
                 {{ $t('type') }}
               </p>
               <p class="body-2 darkGray--text">
-                {{ $t(entity.organizationBack2BluType) }}
+                {{ $t(entity.type) }}
               </p>
             </v-col>
             <v-col class="mx-2">
@@ -42,13 +42,9 @@
                     <v-badge
                       dot
                       inline
-                      :color="entity.organizationEnabled ? 'green' : 'red'"
+                      :color="entity.enabled ? 'green' : 'red'"
                     ></v-badge>
-                    {{
-                      entity.organizationEnabled
-                        ? $t('orgActive')
-                        : $t('orgInactive')
-                    }}
+                    {{ entity.enabled ? $t('orgActive') : $t('orgInactive') }}
                   </p>
                 </v-col>
               </v-row>
@@ -63,7 +59,7 @@
                 :to="{
                   name: 'entity-license',
                   params: {
-                    uuid: entity.organizationUUID,
+                    uuid: entity.id,
                     entity: entity,
                   },
                 }"
@@ -76,10 +72,7 @@
     </v-fade-transition>
   </v-container>
 </template>
-
 <script>
-import API_USERS from '~/api/users'
-
 export default {
   props: {
     entity: {
@@ -92,11 +85,9 @@ export default {
       image: null,
     }
   },
-  async beforeMount() {
-    const path = await API_USERS.init(
-      this.$axios,
-      this.$auth.user.loggedOrganizationUuid
-    ).getOrganizationImage(this.entity.organizationUUID)
+
+  beforeMount() {
+    const path = 'filler' // await API_USERS.init(this.$axios).getOrganizationImage(this.entity.id)
 
     this.image = `https://b2b-assets-development.s3.eu-central-1.amazonaws.com/${path}?${Math.random()}`
   },
