@@ -289,6 +289,8 @@ export default {
   sort: 'Ordenar',
   search: 'Buscar',
   insertEmail: "Correu electrònic de l'usuari",
+  personalDataIn: "Dades personals de l'usuari",
+  insertPassIn: "Contrasenya temporal de l'usuari",
   insertRol: "Rol de l'usuari en la plataforma",
   administrator: 'Administrador',
   editor: 'Editor',

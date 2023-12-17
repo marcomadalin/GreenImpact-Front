@@ -12,29 +12,89 @@
         }}</v-stepper-step>
         <v-stepper-content step="1" editable>
           <v-text-field
-            v-model="form.userEmail"
+            v-model="form.username"
             :disabled="userId !== null"
             :rules="emailRules"
             filled
             shaped
             required
             background-color="white"
-            :label="form.userEmail ? '' : $t('email') + '*'"
+            :label="form.username ? '' : $t('email') + '*'"
             @change="
-              wrongMail = !(
-                !!form.userEmail && /.+@.+\..+/.test(form.userEmail)
-              )
+              wrongMail = !(!!form.username && /.+@.+\..+/.test(form.username))
             "
           />
           <step-buttons-group @next="step = 2" @cancel="$emit('cancel')" />
         </v-stepper-content>
-
+        <!--
+        <v-stepper-step step="2" editable>{{
+          $t('insertPassIn')
+        }}</v-stepper-step>
+        <v-stepper-content step="2" editable>
+          <v-text-field
+            v-model="form.password"
+            :rules="passwordRules"
+            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="show1 ? 'text' : 'password'"
+            filled
+            background-color="white"
+            :label="$t('password')"
+            required
+            :error="error"
+            @click:append="show1 = !show1"
+            @keypress="error = null"
+          ></v-text-field>
+          <v-text-field
+            v-model="confirmPassword"
+            :rules="passwordConfirmRules"
+            :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="show2 ? 'text' : 'password'"
+            filled
+            background-color="white"
+            :label="$t('repeatPassword')"
+            required
+            :error="error"
+            @click:append="show2 = !show2"
+            @keypress="error = null"
+            @change="
+              passwordNotMatch = !(
+                !!confirmPassword && confirmPassword === form.password
+              )
+            "
+          ></v-text-field>
+          <step-buttons-group @next="step = 3" @cancel="$emit('cancel')" />
+        </v-stepper-content>
+        <v-stepper-step step="3" editable>{{
+          $t('personalDataIn')
+        }}</v-stepper-step>
+        <v-stepper-content step="3" editable>
+          <v-text-field
+            v-model="form.name"
+            filled
+            background-color="white"
+            :placeholder="$t('name')"
+          ></v-text-field>
+          <v-text-field
+            v-model="form.surname"
+            filled
+            background-color="white"
+            :placeholder="$t('lastName')"
+          ></v-text-field>
+          <v-text-field
+            v-model="form.phoneNumber"
+            filled
+            background-color="white"
+            :placeholder="$t('phoneNumber')"
+          ></v-text-field>
+          <step-buttons-group @next="step = 4" @cancel="$emit('cancel')" />
+        </v-stepper-content>
+        -->
         <v-stepper-step step="2" editable>
           {{ $t('insertRole') }}
         </v-stepper-step>
         <v-stepper-content step="2" editable>
           <v-container class="mt-0 pt-0" fluid>
-            <v-radio-group v-model="form.userType" class="mt-0 pt-4">
+            <v-radio-group v-model="form.role" class="mt-0 pt-4">
               <v-radio
                 v-for="item in dimensionList"
                 :key="item.value"
@@ -115,20 +175,39 @@ export default {
         (v) => !!v || this.$t('insertMail'),
         (v) => /.+@.+\..+/.test(v) || this.$t('insertValidMail'),
       ],
+      passwordRules: [(v) => !!v || this.$t('insertPassword')],
+      passwordConfirmRules: [
+        (v) => !!v || this.$t('repeatPassword'),
+        (v) => v === this.form.password || this.$t('passwordUnmatched'),
+      ],
       step: 1,
+      confirmPassword: '',
+      show1: false,
+      show2: false,
+      error: null,
       form: {
-        userEmail: this.value.userEmail || null,
-        userType: this.value.userType || null,
+        id: null,
+        name: this.value.name || 'Name',
+        surname: this.value.surname || 'Surname',
+        phoneNumber: this.value.phoneNumber || '12345676',
+        username: this.value.username || '',
+        role: this.value.role || 'USER',
+        loggedOrganization: this.$auth.user.loggedOrganization,
+        password: '',
+        locale: this.value.locale || 'es',
+        membershipDate: this.value.membershipDate || null,
+        enabled: true,
       },
       dialog: false,
       wrongMail: true,
+      passwordNotMatch: true,
     }
   },
 
   computed: {
     dimensionList() {
       return [
-        { label: this.$t('administrator'), value: 'ADMIN' },
+        { label: this.$t('administrator'), value: 'ADMINISTRATOR' },
         { label: this.$t('editor'), value: 'EDITOR' },
         { label: this.$t('user'), value: 'USER' },
       ]

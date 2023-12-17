@@ -198,12 +198,15 @@ export default {
         path: '/user/:user/settings',
         component: resolve(__dirname, 'pages/userSettings.vue'),
       })
+      /*
       routes.push({
         name: 'signup',
         path: '/signup/',
         component: resolve(__dirname, 'pages/signup.vue'),
         auth: false,
       })
+
+       */
       routes.push({
         name: 'user-add',
         path: '/user/add',

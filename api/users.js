@@ -14,6 +14,18 @@ class API_USERS {
     )
   }
 
+  async createUser(user) {
+    return await this.$axios.$post(`user/users/new`, user)
+  }
+
+  async updateUser(id, user) {
+    return await this.$axios.$post(`user/users/${id}`, user)
+  }
+
+  async delete(id) {
+    return await this.$axios.delete(`user/users/${id}`)
+  }
+
   async whoami() {
     return await this.$axios.$get(`/user/authentication/whoami`)
   }
@@ -29,14 +41,6 @@ class API_USERS {
     )
   }
 
-  async getAll() {
-    return await this.$axios.$get(`${this.apiEndpoint}/users`)
-  }
-
-  async get(id) {
-    return await this.$axios.$get(`${this.apiEndpoint}/users/${id}`)
-  }
-
   async getUser(userUUID) {
     return await this.$axios.$get(`/b2b/users/${userUUID}`)
   }
@@ -50,10 +54,6 @@ class API_USERS {
       `${this.apiEndpoint}/users/newFromInvite/${tokenOut}`,
       data
     )
-  }
-
-  async delete(id) {
-    return await this.$axios.delete(`${this.apiEndpoint}/users/${id}`)
   }
 
   async invite(userEmail, userRole) {
@@ -111,32 +111,6 @@ class API_USERS {
 
   async createOrganization(data) {
     return await this.$axios.$post(`b2b/new`, data)
-  }
-
-  async getLicenses(organizationUUID) {
-    return await this.$axios.$get(`b2b/${organizationUUID}/licenses/`)
-  }
-
-  async addLicense(organizationUUID, data) {
-    return await this.$axios.$post(`b2b/${organizationUUID}/newLicense`, data)
-  }
-
-  async deleteLicense(organizationUUID, licenseId) {
-    return await this.$axios.$delete(
-      `b2b/${organizationUUID}/licenses/${licenseId}`
-    )
-  }
-
-  async getAllOrganizations() {
-    return await this.$axios.$get(`b2b/organizations`)
-  }
-
-  async getAllProducts() {
-    return await this.$axios.$get(`b2b/products`)
-  }
-
-  async whoAmI() {
-    return await this.$axios.$get(`b2b/users/whoami`)
   }
 }
 

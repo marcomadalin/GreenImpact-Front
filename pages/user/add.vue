@@ -13,7 +13,7 @@
     </h1>
     <user-steps
       v-model="form"
-      :user-id="$route.params.user ? $route.params.user.userId : null"
+      :user-id="$route.params.user ? $route.params.user.id : null"
       @create="sendMail"
       @update="updateUser"
       @remove="deleteUser"
@@ -45,21 +45,28 @@
 
 <script>
 import API_USERS from '~/api/users'
+import API_ORGANIZATIONS from '~/api/organizations'
 
 export default {
   middleware: ['admin-role'],
 
   data() {
-    const organizationUUID = this.$auth.user.loggedOrganizationUuid
+    const organizationUUID = this.$auth.user.loggedOrganization.id
     let form = {}
     if (this.$route.params.user) {
-      const role = this.$route.params.user.roles[0].roleName
       form = {
-        userEmail: this.$route.params.user.user.email,
-        userType: null,
+        id: this.$route.params.user.id,
+        name: this.$route.params.user.name || null,
+        surname: this.$route.params.user.surname || null,
+        phoneNumber: this.$route.params.user.phoneNumber || null,
+        username: this.$route.params.user.username || null,
+        role: this.$route.params.user.role || null,
+        loggedOrganization: this.$route.params.user.loggedOrganization,
+        password: this.$route.params.user.password,
+        locale: this.$route.params.user.locale,
+        membershipDate: this.$route.params.user.membershipDate,
+        enabled: this.$route.params.user.enabled,
       }
-      form.userType = role
-      console.log(form)
     }
     return {
       organizationUUID,
@@ -73,10 +80,7 @@ export default {
     async sendMail() {
       this.overlay = true
       try {
-        await API_USERS.init(this.$axios, this.organizationUUID).invite(
-          this.form.userEmail,
-          this.form.userType
-        )
+        await API_USERS.init(this.$axios).createUser(this.form)
         this.overlay = false
         this.successText = 'inviteSent'
         this.ok = true
@@ -92,13 +96,7 @@ export default {
       this.overlay = true
       try {
         console.log(this.form)
-        const api = await API_USERS.init(this.$axios, this.organizationUUID)
-        const roles = await api.getOrganizationRoles()
-        let role = {}
-        for (let i = 0; i < roles.length; i++) {
-          if (this.form.userType === roles[i].roleName) role = roles[i]
-        }
-        await api.updateUserRole(userId, role)
+        await API_USERS.init(this.$axios).updateUser(userId, this.form)
         this.overlay = false
         this.successText = 'userUpdated'
         this.ok = true
@@ -113,7 +111,10 @@ export default {
     async deleteUser(userId) {
       this.overlay = true
       try {
-        await API_USERS.init(this.$axios, this.organizationUUID).delete(userId)
+        await API_ORGANIZATIONS.init(this.$axios).removeUser(
+          this.$auth.user.loggedOrganization.id,
+          userId
+        )
         this.overlay = false
         this.successText = 'userDeleted'
         this.ok = true

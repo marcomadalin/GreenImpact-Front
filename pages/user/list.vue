@@ -196,7 +196,7 @@
 </template>
 
 <script>
-import API_USERS from '~/api/users'
+import API_ORGANIZATIONS from '~/api/organizations'
 import UserListItem from '~/components/UserListItem.vue'
 
 export default {
@@ -212,10 +212,9 @@ export default {
     const imagePlan = {}
     const page = 1
     try {
-      allItems = await API_USERS.init(
-        $axios,
-        $auth.user.loggedOrganizationUuid
-      ).getAll()
+      allItems = await API_ORGANIZATIONS.init($axios).getAllUsers(
+        $auth.user.loggedOrganization.id
+      )
       numPages = Math.ceil(allItems.length / numItems)
       const startIndex = 0
       const endIndex = startIndex + numItems
@@ -254,8 +253,8 @@ export default {
       this.filteredItems = []
       const searchText = this.search.toLowerCase()
       for (let i = 0; i < this.allItems.length; i++) {
-        const first = this.allItems[i].user.firstName.toLowerCase()
-        const last = this.allItems[i].user.lastName.toLowerCase()
+        const first = this.allItems[i].name.toLowerCase()
+        const last = this.allItems[i].surname.toLowerCase()
 
         if (
           (first + last).includes(searchText) ||
@@ -271,21 +270,18 @@ export default {
         const newFilteredItems = []
         for (let i = 0; i < this.filteredItems.length; i++) {
           let added = false
-          if (
-            this.checkboxes[0] &&
-            this.filteredItems[i].roles[0].roleName === 'USER'
-          ) {
+          if (this.checkboxes[0] && this.filteredItems[i].role === 'USER') {
             newFilteredItems.push(this.filteredItems[i])
             added = true
           } else if (
             this.checkboxes[1] &&
-            this.filteredItems[i].roles[0].roleName === 'ADMIN'
+            this.filteredItems[i].role === 'ADMIN'
           ) {
             newFilteredItems.push(this.filteredItems[i])
             added = true
           } else if (
             this.checkboxes[2] &&
-            this.filteredItems[i].roles[0].roleName === 'EDITOR'
+            this.filteredItems[i].role === 'EDITOR'
           ) {
             newFilteredItems.push(this.filteredItems[i])
             added = true
@@ -296,7 +292,7 @@ export default {
             this.checkboxes[2]
           )
           if (added) {
-            if (this.checkboxes[3] && this.filteredItems[i].disabled)
+            if (this.checkboxes[3] && !this.filteredItems[i].enabled)
               newFilteredItems.pop()
             else if (this.checkboxes[4] && this.filteredItems[i].enabled)
               newFilteredItems.pop()
@@ -309,7 +305,7 @@ export default {
           else if (
             noRoleSelected &&
             this.checkboxes[4] &&
-            this.filteredItems[i].disabled
+            !this.filteredItems[i].enabled
           )
             newFilteredItems.push(this.filteredItems[i])
         }
@@ -342,11 +338,11 @@ export default {
           break
         default:
           this.filteredItems.sort((a, b) =>
-            a.user.firstName.toLowerCase() + a.user.lastName.toLowerCase() >
-            b.user.firstName.toLowerCase() + b.user.lastName.toLowerCase()
+            a.name.toLowerCase() + a.surname.toLowerCase() >
+            b.name.toLowerCase() + b.surname.toLowerCase()
               ? 1
-              : b.user.firstName.toLowerCase() + b.user.lastName.toLowerCase() >
-                a.user.firstName.toLowerCase() + a.user.lastName.toLowerCase()
+              : b.name.toLowerCase() + b.surname.toLowerCase() >
+                a.name.toLowerCase() + a.surname.toLowerCase()
               ? -1
               : 0
           )

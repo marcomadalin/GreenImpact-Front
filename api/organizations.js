@@ -8,6 +8,23 @@ class API_ORGANIZATIONS {
     return await this.$axios.$get(`/user/organizations/all`)
   }
 
+  async getAllUsers(organizationId) {
+    return await this.$axios.$get(
+      `/user/organizations/${organizationId}/allUsers`
+    )
+  }
+
+  async removeUser(organizationId, userId) {
+    return await this.$axios.$delete(
+      `/user/organizations/${organizationId}/removeUser`,
+      {
+        params: {
+          userId,
+        },
+      }
+    )
+  }
+
   async getOrganization(organizationId) {
     return await this.$axios.$get(`/user/organizations/${organizationId}`)
   }

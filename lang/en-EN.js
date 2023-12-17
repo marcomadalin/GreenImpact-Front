@@ -297,6 +297,8 @@ export default {
   search: 'Search',
   insertEmail: 'User email',
   insertRol: 'User role on the platform',
+  personalDataIn: 'User personal data',
+  insertPassIn: 'User temporal password',
   administrator: 'Administrator',
   editor: 'Editor',
   invite: 'Send invitation',

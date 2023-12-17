@@ -12,10 +12,7 @@
               elevation="0"
               fab
             >
-              {{
-                firstCapitalized(user.user.firstName) +
-                firstCapitalized(user.user.lastName)
-              }}
+              {{ firstCapitalized(user.name) + firstCapitalized(user.surname) }}
             </v-avatar>
           </v-card>
         </v-col>
@@ -27,7 +24,7 @@
                   {{ $t('name') }}
                 </p>
                 <p class="body-2 darkGray--text">
-                  {{ user.user.firstName + ' ' + user.user.lastName }}
+                  {{ user.name + ' ' + user.surname }}
                 </p>
               </div>
             </v-col>
@@ -35,14 +32,14 @@
               <p class="grey--text mb-1 text-caption">
                 {{ $t('email') }}
               </p>
-              <p class="body-2 darkGray--text">{{ user.user.email }}</p>
+              <p class="body-2 darkGray--text">{{ user.username }}</p>
             </v-col>
             <v-col class="mx-2">
               <p class="grey--text mb-1 text-caption">
                 {{ $t('rol') }}
               </p>
               <p class="body-2 darkGray--text">
-                {{ $t(getRole(user.roles[0].roleName)) }}
+                {{ $t(getRole(user.role)) }}
               </p>
             </v-col>
             <v-col class="mx-2">
@@ -98,6 +95,7 @@ export default {
   },
   methods: {
     getRole(role) {
+      if (role === 'SUPER') return 'administrator'
       if (role === 'ADMIN') return 'administrator'
       else if (role === 'EDITOR') return 'editor'
       else return 'user'

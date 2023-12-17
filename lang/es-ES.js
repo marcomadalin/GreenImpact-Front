@@ -493,6 +493,8 @@ export default {
   login1: 'Iniciar sesión',
   profile: 'Mi perfil',
   personalData: 'Datos personales',
+  personalDataIn: 'Datos personales del usuario',
+  insertPassIn: 'Contraseña temporal del usuario',
   phoneNumber: 'Teléfono',
   updatePersonalData: 'Actualizar datos personales',
   accountLanguage: 'Idioma de la cuenta',

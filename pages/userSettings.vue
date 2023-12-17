@@ -179,7 +179,6 @@ export default {
   async asyncData({ $axios, $auth }) {
     let organizations = []
     const user = $auth.user
-    console.log(user)
     const API = API_USERS.init($axios)
     try {
       organizations = await API.getOrganizations($auth.user.id)
