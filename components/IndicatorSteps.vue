@@ -6,14 +6,14 @@
       </v-stepper-step>
       <v-stepper-content step="1" editable>
         <v-text-field
-          v-model="form.indicatorName"
+          v-model="form.name"
           filled
           shaped
           required
           background-color="white"
           :label="$t('indicatorName')"
           :rules="[(v) => !!v || $t('requiredField')]"
-          @change="formNameBad = !form.indicatorName"
+          @change="formNameBad = !form.name"
         />
         <step-buttons-group @next="step = 2" @cancel="$emit('cancel')" />
       </v-stepper-content>
@@ -23,7 +23,7 @@
       </v-stepper-step>
       <v-stepper-content step="2" editable>
         <v-container class="ml-1" fluid>
-          <v-radio-group v-model="form.indicatorType">
+          <v-radio-group v-model="form.type">
             <v-radio
               v-for="item in dimensionList"
               :key="item.value"
@@ -35,42 +35,23 @@
         <div v-if="showQualitative">
           <v-select
             id="qualitative"
-            v-model="form.qualitativeType"
-            :items="qualtypes"
-            :item-text="(item) => item.qualitativeTypeName"
+            v-model="form.measure"
+            :items="qualitativeMeasures"
+            :item-text="(item) => item.name"
             :item-value="(item) => item"
             :label="$t('qualiType')"
             filled
             auto-select-first
           />
         </div>
-        <!-- quantitative indicator -->
         <div v-else>
           <v-select
             id="quantitativeMeasurementUnit"
-            v-model="form.quantitativeMeasurementUnit"
-            :items="munits"
-            :item-text="
-              (item) =>
-                item.quantitativeMeasurementUnitName +
-                ' - ' +
-                item.quantitativeMeasurementUnit
-            "
+            v-model="form.measure"
+            :items="quantitativeMeasures"
+            :item-text="(item) => item.name + ' - ' + item.values[0]"
             :item-value="(item) => item"
             :label="$t('measureUnit')"
-            filled
-            auto-select-first
-          />
-        </div>
-        <!-- dimensional indicator -->
-        <div v-if="showDimensional">
-          <v-select
-            id="dimensionalType"
-            v-model="form.dimensionalType"
-            :items="dtypes"
-            :item-text="(item) => item.dimensionTypeName"
-            :item-value="(item) => item"
-            :label="$t('dimType')"
             filled
             auto-select-first
           />
@@ -84,21 +65,17 @@
         <v-row>
           <v-col md="8">
             <v-select
-              v-model="form.indicatorLevel"
+              v-model="form.impact"
               clearable
               multiple
-              :items="odsnonstandardlist"
-              item-text="levelN_ItemName"
-              item-value="levelN_ItemId"
+              :items="impact"
+              item-text="name"
+              item-value="number"
             />
           </v-col>
         </v-row>
         <v-col class="mx-0 px-0">
-          <v-row
-            v-if="!form.indicatorUUID"
-            class="mx-0 px-0"
-            style="margin-top: 20px"
-          >
+          <v-row v-if="!form.id" class="mx-0 px-0" style="margin-top: 20px">
             <v-btn
               :disabled="formNameBad"
               rounded
@@ -139,6 +116,7 @@
 </template>
 
 <script>
+import { SDG } from '~/constants/utils.js'
 import StepButtonsGroup from '~/components/StepButtonsGroup.vue'
 
 export default {
@@ -148,56 +126,43 @@ export default {
       type: Array,
       default: () => [],
     },
-    dtypes: {
-      type: Array,
-      default: () => [],
-    },
-    qualtypes: {
-      type: Array,
-      default: () => [],
-    },
     value: {
       type: Object,
       default: () => ({}),
     },
-    odsnonstandardlist: {
-      type: Array,
-      default: () => [],
-    },
   },
   data() {
+    const qualitativeMeasures = this.munits.filter(
+      (unit) => unit.type === 'QUALITATIVE'
+    )
+    const quantitativeMeasures = this.munits.filter(
+      (unit) => unit.type === 'QUANTITATIVE'
+    )
     return {
+      impact: SDG,
+      qualitativeMeasures,
+      quantitativeMeasures,
       step: 1,
       formNameBad: true,
       form: {
-        qualitativeType: null,
-        quantitativeMeasurementUnit: null,
-        dimensionalType: null,
-        dimension: this.value.dimension || null,
-        indicatorUUID: this.value.indicatorUUID || null,
-        indicatorName: this.value.indicatorName || null,
-        indicatorLevel: null,
+        id: this.value.id || null,
+        organizationId: this.$auth.user.loggedOrganization.id || null,
+        name: this.value.name || null,
+        measure: null,
+        type: this.value.type || null,
+        framework: this.value.framework || 'CUSTOM',
+        impact: this.value.impact || [],
       },
     }
   },
 
   computed: {
-    showQuantitative() {
-      return this.form.indicatorType === 'QUANTITATIVE'
-    },
-    showDimensional() {
-      return this.form.indicatorType === 'QUANTITATIVE_DIMENSIONAL'
-    },
     showQualitative() {
-      return this.form.indicatorType === 'QUALITATIVE'
+      return this.form.type === 'QUALITATIVE'
     },
     dimensionList() {
       return [
         { label: this.$t('QUANTITATIVE'), value: 'QUANTITATIVE' },
-        {
-          label: this.$t('QUANTITATIVE_DIMENSIONAL'),
-          value: 'QUANTITATIVE_DIMENSIONAL',
-        },
         { label: this.$t('QUALITATIVE'), value: 'QUALITATIVE' },
       ]
     },
@@ -206,33 +171,14 @@ export default {
   watch: {
     form: {
       handler(value) {
-        let input = {
-          indicatorName: value.indicatorName,
-          indicatorDTOType: value.indicatorType,
-          indicatorType: value.indicatorType,
-          indicatorLevel: value.indicatorLevel,
-        }
-
-        if (value.indicatorType === 'QUALITATIVE') {
-          input = {
-            ...input,
-            qualitativeTypeDTO: value.qualitativeType,
-          }
-        }
-
-        if (value.indicatorType === 'QUANTITATIVE') {
-          input = {
-            ...input,
-            quantitativeMeasurementUnitDTO: value.quantitativeMeasurementUnit,
-          }
-        }
-
-        if (value.indicatorType === 'QUANTITATIVE_DIMENSIONAL') {
-          input = {
-            ...input,
-            quantitativeMeasurementUnitDTO: value.quantitativeMeasurementUnit,
-            dimensionalType: value.dimensionalType,
-          }
+        const input = {
+          id: this.form.id || null,
+          organizationId: this.form.organizationId || null,
+          name: this.form.name || null,
+          measure: this.form.measure || null,
+          type: this.form.type || null,
+          framework: this.form.framework || 'CUSTOM',
+          impact: this.form.impact || [],
         }
 
         this.$emit('input', input)

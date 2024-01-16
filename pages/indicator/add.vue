@@ -6,9 +6,6 @@
     <indicator-steps
       v-model="form"
       :munits="measurementUnits"
-      :dtypes="dimensionalTypes"
-      :qualtypes="qualitativeTypes"
-      :odsnonstandardlist="odsNonStandardList"
       @create="create"
       @update="update"
       @cancel="
@@ -39,7 +36,6 @@
 
 <script>
 import API from '~/api/indicators'
-import { ma2030 } from '~/api/indicatorsSources'
 
 export default {
   middleware: ['asset-management-role'],
@@ -49,35 +45,9 @@ export default {
     let form = {}
     let indicator = {}
     let measurementUnits = {}
-    let dimensionalTypes = {}
-    let qualitativeTypes = {}
-    let odsNonStandardList = {}
-    let odsNonStandardList2 = []
 
     try {
-      measurementUnits = await api.getMUnits()
-    } catch (e) {
-      console.log(e.response)
-    }
-
-    try {
-      dimensionalTypes = await api.getDimensionalTypes()
-    } catch (e) {
-      console.log(e.response)
-    }
-
-    try {
-      qualitativeTypes = await api.getQualitativeTypes()
-    } catch (e) {
-      console.log(e.response)
-    }
-
-    try {
-      odsNonStandardList2 = await ma2030.init($axios).listNonStandard()
-      odsNonStandardList = odsNonStandardList2.map(
-        (a, b) => Object.assign(a, b),
-        {}
-      )
+      measurementUnits = await api.getMeasures()
     } catch (e) {
       console.log(e.response)
     }
@@ -95,9 +65,6 @@ export default {
       form,
       indicator,
       measurementUnits,
-      dimensionalTypes,
-      qualitativeTypes,
-      odsNonStandardList,
       ok: null,
       overlay: false,
     }
@@ -114,27 +81,11 @@ export default {
   methods: {
     async create() {
       this.overlay = true
-      const { indicatorLevel, ...form } = this.form
+      const { ...form } = this.form
       try {
         this.indicator = await this.api.create({
           ...form,
-          organizationUUID: this.$auth.user.loggedOrganizationUuid,
-          indicatorEnabled: true,
-          indicatorScope: 'ORGANIZATION',
         })
-
-        try {
-          const api = await ma2030.init(this.$axios)
-          for (let i = 0; i < indicatorLevel.length; i++) {
-            await api.addCustomIndicators(
-              indicatorLevel[i],
-              this.indicator.indicatorUUID
-            )
-          }
-        } catch (e) {
-          console.log(e.response)
-        }
-
         this.overlay = false
         this.ok = true
         await this.$router.push({
@@ -148,9 +99,9 @@ export default {
 
     async update() {
       this.overlay = true
-      const { indicatorLevel, ...form } = this.form
+      const { ...form } = this.form
       try {
-        this.indicator = await this.api.update(this.plan.planUUID, form)
+        this.indicator = await this.api.update(this.plan.id, form)
         this.overlay = false
         this.ok = true
         this.$router.push({

@@ -69,15 +69,6 @@
                       hide-details
                       @click="filterByName"
                     ></v-checkbox>
-                    <v-checkbox
-                      v-model="checkboxes[2]"
-                      class="my-0 py-0 mx-0 px-0"
-                      :label="$t('QUANTITATIVE_DIMENSIONAL')"
-                      color="primary"
-                      :ripple="false"
-                      hide-details
-                      @click="filterByName"
-                    ></v-checkbox>
                   </v-col>
                 </v-list-item-content>
               </v-list-item>
@@ -105,7 +96,7 @@
       <v-list-item v-for="(item, i) in pageItems" :key="i" class="mb-5 px-0">
         <indicator-list-item
           :key="itemKey"
-          :areas="getIndicatorAreas(item.indicatorUUID)"
+          :areas="getIndicatorAreas(item.id)"
           :indicator="item"
           @delete="deleteIndicator"
         >
@@ -141,26 +132,22 @@
 <script>
 import API_IND from '~/api/indicators'
 import IndicatorListItem from '~/components/IndicatorListItem.vue'
-import API from '~/api/plans'
 import { ma2030 } from '~/api/indicatorsSources'
 export default {
   components: { IndicatorListItem },
   middleware: ['admin-role'],
 
-  async asyncData({ $axios }) {
+  async asyncData({ $axios, $auth }) {
     let allItems = []
     let filteredItems = []
     let pageItems = []
     const numItems = 10
     let numPages = 0
     const page = 1
-    let totalAreas = []
     try {
-      const plans = await API.init($axios).list()
-      for (let i = 0; i < plans.length; ++i)
-        totalAreas = totalAreas.concat(plans[i].areaDTOs)
-
-      allItems = await API_IND.init($axios).listCustom()
+      allItems = await API_IND.init($axios).listCustom(
+        $auth.user.loggedOrganization.id
+      )
 
       numPages = Math.ceil(allItems.length / numItems)
       const startIndex = 0
@@ -168,11 +155,11 @@ export default {
       const finalIndex = endIndex > allItems.length ? allItems.length : endIndex
       filteredItems = allItems.slice(0, allItems.length)
       filteredItems.sort((a, b) =>
-        a.indicatorName.toLowerCase() + a.indicatorName.toLowerCase() >
-        b.indicatorName.toLowerCase() + b.indicatorName.toLowerCase()
+        a.name.toLowerCase() + a.name.toLowerCase() >
+        b.name.toLowerCase() + b.name.toLowerCase()
           ? 1
-          : b.indicatorName.toLowerCase() + b.indicatorName.toLowerCase() >
-            a.indicatorName.toLowerCase() + a.indicatorName.toLowerCase()
+          : b.name.toLowerCase() + b.name.toLowerCase() >
+            a.name.toLowerCase() + a.name.toLowerCase()
           ? -1
           : 0
       )
@@ -181,7 +168,7 @@ export default {
       console.log(e.response)
     }
     return {
-      totalAreas,
+      totalAreas: [],
       ok: false,
       allItems,
       filteredItems,
@@ -240,11 +227,11 @@ export default {
     },
     updateItems() {
       this.filteredItems.sort((a, b) =>
-        a.indicatorName.toLowerCase() + a.indicatorName.toLowerCase() >
-        b.indicatorName.toLowerCase() + b.indicatorName.toLowerCase()
+        a.name.toLowerCase() + a.name.toLowerCase() >
+        b.name.toLowerCase() + b.name.toLowerCase()
           ? 1
-          : b.indicatorName.toLowerCase() + b.indicatorName.toLowerCase() >
-            a.indicatorName.toLowerCase() + a.indicatorName.toLowerCase()
+          : b.name.toLowerCase() + b.name.toLowerCase() >
+            a.name.toLowerCase() + a.name.toLowerCase()
           ? -1
           : 0
       )
@@ -260,8 +247,8 @@ export default {
       this.filteredItems = []
       const searchText = this.search.toLowerCase()
       for (let i = 0; i < this.allItems.length; i++) {
-        const first = this.allItems[i].indicatorName.toLowerCase()
-        const last = this.allItems[i].indicatorName.toLowerCase()
+        const first = this.allItems[i].name.toLowerCase()
+        const last = this.allItems[i].name.toLowerCase()
 
         if (
           (first + last).includes(searchText) ||
@@ -278,17 +265,12 @@ export default {
         for (let i = 0; i < this.filteredItems.length; i++) {
           if (
             this.checkboxes[0] &&
-            this.filteredItems[i].indicatorType === 'QUANTITATIVE'
+            this.filteredItems[i].type === 'QUANTITATIVE'
           )
             newFilteredItems.push(this.filteredItems[i])
           else if (
             this.checkboxes[1] &&
-            this.filteredItems[i].indicatorType === 'QUALITATIVE'
-          )
-            newFilteredItems.push(this.filteredItems[i])
-          else if (
-            this.checkboxes[2] &&
-            this.filteredItems[i].indicatorType === 'QUANTITATIVE_DIMENSIONAL'
+            this.filteredItems[i].type === 'QUALITATIVE'
           )
             newFilteredItems.push(this.filteredItems[i])
         }

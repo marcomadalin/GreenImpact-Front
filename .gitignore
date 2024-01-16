@@ -99,3 +99,4 @@ sw.*
 venv/*
 aws.ini
 s3_publish.py
+/package-lock.json

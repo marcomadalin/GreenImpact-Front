@@ -17,7 +17,7 @@
           <v-row class="mb-1">
             <v-col cols="auto">
               <p class="text--body-2 mb-1" style="color: #060632">
-                {{ indicator.indicatorName }}
+                {{ indicator.name }}
               </p>
             </v-col>
             <v-spacer></v-spacer>
@@ -44,10 +44,10 @@
             class="d-flex justify-end text-center align-center mb-0"
           >
             <p class="mr-3 gray--text text-caption my-0">
-              {{ $t(indicator.indicatorType) }}
+              {{ $t(indicator.type) }}
             </p>
             <v-card
-              v-for="(ods, j) in levels"
+              v-for="(ods, j) in indicator.impact"
               :key="j"
               index
               width="28px"
@@ -119,8 +119,8 @@
                           $router.push({
                             name: 'area-viewlist',
                             params: {
-                              plan: item.plan.planUUID,
-                              area: item.areaId,
+                              plan: item.plan.id,
+                              area: item.area.id,
                             },
                           })
                         "
@@ -169,8 +169,6 @@
 </template>
 
 <script>
-import { ma2030 } from '~/api/indicatorsSources'
-
 export default {
   name: 'IndicatorListItem',
   props: {
@@ -197,23 +195,6 @@ export default {
       else if (this.areas.length === 3) return 130
       else return 150
     },
-  },
-  async mounted() {
-    try {
-      const API = await ma2030.init(this.$axios)
-
-      const relatedIndicators = await API.relatedIndicators(
-        this.indicator.indicatorUUID
-      )
-      console.log(relatedIndicators)
-      for (let i = 0; i < relatedIndicators.length; i++) {
-        const ods = await API.getLevel(relatedIndicators[i].levelN_ItemId, 1)
-        const odsName = ods.levelN_ItemName.split(' ')
-        this.levels.push(odsName[odsName.length - 1])
-      }
-    } catch (e) {
-      console.log(e.response)
-    }
   },
 }
 </script>
