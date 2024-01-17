@@ -25,18 +25,8 @@ class API_IND {
     return await this.$axios.$get(`indicator/indicators/allMeasures`)
   }
 
-  async getDimensionalTypes() {
-    return await this.$axios.$get(
-      `${this.apiEndpoint}/quantitative/dimensional/types`
-    )
-  }
-
-  async getQualitativeTypes() {
-    return await this.$axios.$get(`${this.apiEndpoint}/qualitative/types`)
-  }
-
-  async delete(indicatorUUID) {
-    return await this.$axios.$delete(`${this.apiEndpoint}/${indicatorUUID}`)
+  async delete(indicatorId) {
+    return await this.$axios.$delete(`indicator/indicators/${indicatorId}`)
   }
 
   async create(data) {

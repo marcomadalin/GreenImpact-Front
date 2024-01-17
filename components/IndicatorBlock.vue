@@ -21,11 +21,11 @@
             @click="
               $router.push({
                 name: 'area-viewlist',
-                params: { plan: indicator.area.plan.planUUID },
+                params: { plan: indicator.area.plan.id },
               })
             "
           >
-            {{ indicator.area.plan.planName }}
+            {{ indicator.area.plan.name }}
           </a>
           &nbsp;|&nbsp;
         </span>
@@ -37,13 +37,13 @@
               $router.push({
                 name: 'area-viewlist',
                 params: {
-                  plan: indicator.area.plan.planUUID,
-                  area: indicator.area.areaId,
+                  plan: indicator.area.plan.id,
+                  area: indicator.area.id,
                 },
               })
             "
           >
-            {{ indicator.area.areaName }}
+            {{ indicator.area.name }}
           </a>
         </span>
       </div>
@@ -52,7 +52,7 @@
         class="white lighten-5 text-body-1 darkBlue--text px-4 mt-1 mb-0 pb-2 mt-0 pt-2"
       >
         <p class="text--body-2 mb-2" style="color: #060632">
-          {{ indicator.indicatorDTO.indicatorName }}
+          {{ indicator.name }}
         </p>
       </v-container>
       <v-container fluid class="white lighten-5 my-0 py-0 px-4">
@@ -68,7 +68,7 @@
           <v-col v-if="show" cols="auto" class="px-4">
             <v-row id="indicatorIcons">
               <p class="mr-3 gray--text text-caption my-0">
-                {{ getIndicatorType(indicator.indicatorDTO.indicatorType) }}
+                {{ getIndicatorType(indicator.type) }}
               </p>
               <v-card
                 v-for="(imp, j) in impact"

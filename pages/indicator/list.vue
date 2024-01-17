@@ -95,6 +95,7 @@
     <v-list v-if="pageItems.length" color="transparent">
       <v-list-item v-for="(item, i) in pageItems" :key="i" class="mb-5 px-0">
         <indicator-list-item
+          v-if="allAreas"
           :key="itemKey"
           :areas="getIndicatorAreas(item.id)"
           :indicator="item"
@@ -131,12 +132,12 @@
 
 <script>
 import API_IND from '~/api/indicators'
+import API_AREAS from '~/api/areas'
 import IndicatorListItem from '~/components/IndicatorListItem.vue'
-import { ma2030 } from '~/api/indicatorsSources'
+
 export default {
   components: { IndicatorListItem },
   middleware: ['admin-role'],
-
   async asyncData({ $axios, $auth }) {
     let allItems = []
     let filteredItems = []
@@ -148,7 +149,6 @@ export default {
       allItems = await API_IND.init($axios).listCustom(
         $auth.user.loggedOrganization.id
       )
-
       numPages = Math.ceil(allItems.length / numItems)
       const startIndex = 0
       const endIndex = startIndex + numItems
@@ -183,36 +183,44 @@ export default {
       isFocused: false,
     }
   },
+
+  data() {
+    return {
+      allAreas: null,
+    }
+  },
+  async mounted() {
+    const api = await API_AREAS.init(this.$axios)
+
+    this.allAreas = await Promise.all(
+      this.allItems.map(async (indicator) => {
+        const indicatorAreas = await api.getRelatedAreas(
+          this.$auth.user.loggedOrganization.id,
+          indicator.id
+        )
+        return {
+          indicatorId: indicator.id,
+          areas: indicatorAreas,
+        }
+      })
+    )
+  },
   methods: {
-    getIndicatorAreas(indicatorUUID) {
-      const indicatorAreas = []
-      for (let i = 0; i < this.totalAreas.length; i++) {
-        for (let j = 0; j < this.totalAreas[i].areaIndicatorDTOs.length; ++j) {
-          if (
-            this.totalAreas[i].areaIndicatorDTOs[j].indicatorUUID ===
-            indicatorUUID
-          ) {
-            indicatorAreas.push(this.totalAreas[i])
-            break
-          }
+    getIndicatorAreas(indicatorId) {
+      let result = null
+      for (let i = 0; i < this.allAreas.length; i++) {
+        const area = this.allAreas[i]
+        if (area.indicatorId === indicatorId) {
+          result = area.areas
+          break
         }
       }
-      return indicatorAreas
+      return result
     },
     async deleteIndicator(indicator) {
       this.overlay = true
       try {
-        const API = await ma2030.init(this.$axios)
-        const relatedIndicators = await API.relatedIndicators(
-          indicator.indicatorUUID
-        )
-        for (let i = 0; i < relatedIndicators.length; i++) {
-          await API.deleteCustomIndicator(
-            relatedIndicators[i].levelN_ItemId,
-            relatedIndicators[i].indicatorUUID
-          )
-        }
-        await API_IND.init(this.$axios).delete(indicator.indicatorUUID)
+        await API_IND.init(this.$axios).delete(indicator.id)
 
         this.overlay = false
         this.ok = true

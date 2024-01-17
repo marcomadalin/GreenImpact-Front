@@ -9,6 +9,10 @@ class API {
     return this
   }
 
+  async getRelatedAreas(organizationId, indicatorId) {
+    return await this.$axios.$get(`plan/areas/${organizationId}/${indicatorId}/relatedAreas`)
+  }
+
   async create(data) {
     return await this.$axios.$post(`${this.apiEndpoint}/new/`, data)
   }

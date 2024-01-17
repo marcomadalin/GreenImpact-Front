@@ -119,13 +119,13 @@
                           $router.push({
                             name: 'area-viewlist',
                             params: {
-                              plan: item.plan.id,
+                              plan: item.area.plan.id,
                               area: item.area.id,
                             },
                           })
                         "
                       >
-                        {{ item.areaName }}
+                        {{ item.name }}
                       </a>
                     </li>
                   </v-list-item-content>
